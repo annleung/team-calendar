@@ -95,7 +95,7 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .filter-dropdown button.selected{background:var(--primary-light);color:var(--primary);font-weight:500}
 .filter-dropdown .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .filter-dropdown .hidden-tag{font-size:11px;color:var(--text3);margin-left:auto}
-.cal-body{flex:1;overflow:auto;background:var(--bg);position:relative}
+.cal-body{flex:1;overflow:auto;background:var(--bg);position:relative;display:flex;flex-direction:column}
 .cal-grid{display:grid;min-width:100%;position:relative}
 .cal-grid .time-col{width:56px;flex-shrink:0}
 .day-header{position:sticky;top:0;z-index:5;background:var(--bg);text-align:center;padding:8px 0;border-bottom:1px solid var(--border-light);font-size:13px;color:var(--text2);height:52px;display:flex;flex-direction:column;justify-content:center;align-items:center}
@@ -158,7 +158,8 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .member-card:hover{box-shadow:var(--shadow-md)}
 .member-card .avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:#fff;flex-shrink:0}
 .member-card .info{flex:1;min-width:0}
-.member-card .name{font-size:15px;font-weight:600}
+.member-card .name{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px}
+.member-card .name .role-icon{font-size:16px;line-height:1}
 .member-card .role-tag{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:var(--r-full);margin-top:3px}
 .role-super{background:#FFF3CD;color:#856404}
 .role-admin{background:var(--primary-light);color:var(--primary)}
@@ -209,24 +210,64 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
 .loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.8);z-index:999;display:flex;align-items:center;justify-content:center}
 .loading-spinner{width:40px;height:40px;border:3px solid var(--bg3);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+.login-progress{margin-top:20px;text-align:center}
+.login-progress .progress-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.login-progress .progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),#5AC8FA);border-radius:3px;transition:width .4s ease;width:0}
+.login-progress .progress-text{font-size:13px;color:var(--text2);animation:pulse-text 1.5s ease infinite}
+@keyframes pulse-text{0%,100%{opacity:.6}50%{opacity:1}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:768px){
   :root{--nav-h:56px}
   .navbar{padding:0 16px;gap:10px}
+  .navbar .brand{font-size:16px}
   .navbar .nav-links{display:none}
-  .cal-header{padding:12px 16px;gap:8px}
-  .week-nav .week-title{font-size:14px;min-width:140px}
+  .cal-header{padding:10px 16px;gap:6px}
+  .week-nav .week-title{font-size:13px;min-width:120px}
   .member-filter{display:none}
   .tab-bar{display:block}
   .page.has-tabs{padding-bottom:var(--tab-h)}
-  .modal{max-width:100%;border-radius:var(--r-lg) var(--r-lg) 0 0;max-height:90vh;position:fixed;bottom:0;left:0;right:0}
+  .modal{max-width:100%;border-radius:16px 16px 0 0;max-height:88vh;position:fixed;bottom:0;left:0;right:0}
   .cal-body .time-label{font-size:10px}
   .auth-card{padding:28px 24px}
-  .team-page .team-head{padding:16px}
-  .member-list{padding:12px 16px}
-  .member-card{padding:12px 14px}
-  .member-card .vis-toggle{display:none}
+  /* Mobile day tabs */
+  .mobile-day-tabs{display:flex;background:var(--bg);border-bottom:1px solid var(--border-light);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .mobile-day-tabs::-webkit-scrollbar{display:none}
+  .mobile-day-tab{flex:1;min-width:48px;padding:10px 4px;text-align:center;font-size:12px;color:var(--text2);cursor:pointer;transition:all .2s;border-bottom:2.5px solid transparent;white-space:nowrap}
+  .mobile-day-tab.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
+  .mobile-day-tab .day-num{font-size:18px;font-weight:600;display:block;margin-top:2px}
+  .mobile-day-tab.today .day-num{background:var(--primary);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+  /* Team page mobile */
+  .team-page .team-head{padding:16px;flex-direction:column;align-items:stretch;gap:10px}
+  .team-page .team-head h1{font-size:18px}
+  .team-page .team-actions{width:100%;flex-direction:column}
+  .team-page .search-input{width:100%;height:42px;font-size:15px;border-radius:10px}
+  .team-page .btn{width:100%;justify-content:center}
+  .member-list{padding:12px 16px;gap:10px}
+  .member-card{padding:14px 16px;flex-wrap:wrap;gap:12px;border-radius:12px}
+  .member-card .avatar{width:44px;height:44px;font-size:18px}
+  .member-card .name{font-size:15px;display:flex;align-items:center;gap:6px}
+  .member-card .name .role-icon{font-size:16px}
+  .member-card .role-tag{font-size:11px;padding:3px 10px}
+  .member-card .vis-toggle{display:flex;width:100%;margin-top:4px;padding-top:10px;border-top:1px solid var(--border-light);justify-content:flex-end}
+  /* Settings mobile */
   .settings-page .settings-content{padding:20px 16px}
+  .settings-card{padding:20px;border-radius:12px}
+  /* Filter dropdown on mobile - use tab-bar filter instead */
+  .mobile-filter-wrap{padding:8px 16px;background:var(--bg);border-bottom:1px solid var(--border-light);position:relative}
+  .mobile-filter-wrap .filter-btn{width:100%;justify-content:center;padding:10px 14px;border-radius:10px;font-size:14px}
+  .mobile-filter-wrap .filter-dropdown{left:16px;right:16px;min-width:auto;max-height:250px}
+  /* Event block mobile */
+  .event-block{border-radius:8px;padding:4px 8px 4px 10px;font-size:12px}
+  .event-block .ev-title{font-size:12px}
+  .event-block .ev-time{font-size:11px}
+  /* Day header mobile */
+  .day-header{height:44px;padding:4px 0}
+  .day-header .day-num{font-size:18px;width:28px;height:28px}
+  /* Hour slot mobile */
+  .day-col .hour-slot{height:52px}
+  /* Smoother transitions */
+  .page{transition:opacity .2s}
+  .member-card{transition:all .2s ease}
 }
 </style>
 </head>
@@ -253,6 +294,10 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 <div class="input-group"><label>密码</label><input id="login-pwd" type="password" placeholder="请输入密码" onkeydown="if(event.key==='Enter')doLogin()"></div>
 <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);margin-bottom:20px;cursor:pointer"><input type="checkbox" id="login-remember" checked style="accent-color:var(--primary)"> 记住我</label>
 <button class="btn btn-primary btn-block btn-lg" onclick="doLogin()">登 录</button>
+<div class="login-progress" id="login-progress" style="display:none">
+<div class="progress-bar"><div class="progress-fill" id="login-progress-fill"></div></div>
+<div class="progress-text" id="login-progress-text">准备中...</div>
+</div>
 </div>
 </div>
 
@@ -491,21 +536,68 @@ async function doSetup() {
   } catch (e) { toast('创建失败: ' + e.message, 'error'); }
 }
 
+function setLoginProgress(pct, text) {
+  const bar = document.getElementById('login-progress');
+  const fill = document.getElementById('login-progress-fill');
+  const txt = document.getElementById('login-progress-text');
+  if (bar) bar.style.display = 'block';
+  if (fill) fill.style.width = pct + '%';
+  if (txt) txt.textContent = text;
+}
+
 async function doLogin() {
   const name = document.getElementById('login-name').value.trim();
   const pwd = document.getElementById('login-pwd').value;
   const remember = document.getElementById('login-remember').checked;
   if (!name || !pwd) return toast('请输入姓名和密码', 'error');
-  try {
-    const users = await fetchUsers();
-    const user = users.find(u => u.name === name && u.password === pwd);
-    if (!user) return toast('姓名或密码错误', 'error');
-    currentUser = user;
-    localStorage.setItem('tc_session', JSON.stringify({ userId: user.id, remember, ts: Date.now() }));
-    toast(`欢迎回来，${user.name}！`, 'success');
-    await loadApp();
-    showPage('calendar');
-  } catch (e) { toast('登录失败: ' + e.message, 'error'); }
+  if (typeof supabase === 'undefined') return toast('页面加载未完成，请刷新页面后重试', 'error');
+  const btn = document.querySelector('#page-login .btn-primary');
+  btn.disabled = true;
+  btn.textContent = '登录中...';
+  setLoginProgress(10, '连接服务器...');
+  let retries = 2;
+  while (retries >= 0) {
+    try {
+      setLoginProgress(25, '正在验证身份...');
+      // Parallel: fetch users + events at the same time (was 3 calls, now 2)
+      const [users, events] = await Promise.all([fetchUsers(), fetchEvents()]);
+      setLoginProgress(70, '验证成功，加载数据...');
+      const user = users.find(u => u.name === name && u.password === pwd);
+      if (!user) {
+        setLoginProgress(0, '');
+        document.getElementById('login-progress').style.display = 'none';
+        btn.disabled = false;
+        btn.textContent = '登 录';
+        return toast('姓名或密码错误', 'error');
+      }
+      currentUser = user;
+      allUsers = users;
+      allEvents = events;
+      localStorage.setItem('tc_session', JSON.stringify({ userId: user.id, remember, ts: Date.now() }));
+      setLoginProgress(90, '准备日历...');
+      updateNavUser();
+      updateTeamVisibility();
+      setLoginProgress(100, `欢迎回来，${user.name}！`);
+      toast(`欢迎回来，${user.name}！`, 'success');
+      await new Promise(r => setTimeout(r, 400));
+      document.getElementById('login-progress').style.display = 'none';
+      showPage('calendar');
+      return;
+    } catch (e) {
+      const msg = e.message || String(e);
+      if (retries > 0 && (msg.includes('fetch') || msg.includes('network') || msg.includes('Failed') || msg.includes('timeout') || msg.includes('Load'))) {
+        setLoginProgress(10, `网络不稳定，重试中(${retries})...`);
+        retries--;
+        await new Promise(r => setTimeout(r, 2000));
+        continue;
+      }
+      document.getElementById('login-progress').style.display = 'none';
+      toast('登录失败: ' + msg, 'error');
+      btn.disabled = false;
+      btn.textContent = '登 录';
+      return;
+    }
+  }
 }
 
 async function doLogout() {
@@ -609,10 +701,47 @@ function renderCalendar() {
   const dayNames = ['一','二','三','四','五','六','日'];
 
   body.innerHTML = '';
+
+  // Mobile: day tabs + filter
+  if (isMobile) {
+    const dayTabs = document.createElement('div');
+    dayTabs.className = 'mobile-day-tabs';
+    const dayLabels = ['一','二','三','四','五','六','日'];
+    for (let i = 0; i < 7; i++) {
+      const d = days[i];
+      const tab = document.createElement('div');
+      tab.className = 'mobile-day-tab' + (i === mobileDay ? ' active' : '') + (isToday(d) ? ' today' : '');
+      tab.innerHTML = `<span>${dayLabels[i]}</span><span class="day-num">${d.getDate()}</span>`;
+      tab.onclick = () => { mobileDayIndex = i; renderCalendar(); };
+      dayTabs.appendChild(tab);
+    }
+    body.appendChild(dayTabs);
+    // Mobile filter
+    const filterWrap = document.createElement('div');
+    filterWrap.className = 'mobile-filter-wrap';
+    const filterLabel = filterUserId === 'all' ? '👥 全部成员' : filterUserId === 'mine' ? '👤 只看我的' : (() => { const u = allUsers.find(x => x.id == filterUserId); return u ? `👤 ${u.name}` : '👥 全部成员'; })();
+    filterWrap.innerHTML = `<button class="filter-btn" onclick="this.parentElement.querySelector('.filter-dropdown').classList.toggle('show')">${filterLabel} <span style="font-size:10px;margin-left:4px">▾</span></button><div class="filter-dropdown" id="mobile-filter-dropdown"></div>`;
+    body.appendChild(filterWrap);
+    // Populate mobile filter dropdown
+    setTimeout(() => {
+      const mdd = document.getElementById('mobile-filter-dropdown');
+      if (!mdd) return;
+      let fhtml = `<button class="${filterUserId==='all'?'selected':''}" onclick="setFilter('all')"><span class="dot" style="background:var(--primary)"></span>全部成员</button>`;
+      fhtml += `<button class="${filterUserId==='mine'?'selected':''}" onclick="setFilter('mine')"><span class="dot" style="background:${getUserColor(currentUser)}"></span>只看我的</button>`;
+      fhtml += '<div style="height:1px;background:var(--border-light);margin:4px 0"></div>';
+      allUsers.forEach(u => {
+        if (!u.visible && !isSuperAdmin() && u.id !== currentUser.id) return;
+        fhtml += `<button class="${filterUserId==u.id?'selected':''}" onclick="setFilter(${u.id})"><span class="dot" style="background:${getUserColor(u)}"></span>${esc(u.name)}</button>`;
+      });
+      mdd.innerHTML = fhtml;
+    }, 0);
+  }
+
   const wrapper = document.createElement('div');
-  wrapper.style.cssText = 'display:flex;min-height:100%;position:relative';
+  wrapper.style.cssText = 'display:flex;min-height:100%;position:relative;flex:1';
   const timeCol = document.createElement('div');
-  timeCol.style.cssText = 'width:56px;flex-shrink:0;padding-top:52px';
+  const topPad = isMobile ? '44px' : '52px';
+  timeCol.style.cssText = `width:50px;flex-shrink:0;padding-top:${topPad}`;
   for (let h = 0; h < 24; h++) {
     const lbl = document.createElement('div');
     lbl.className = 'time-label';
@@ -632,15 +761,17 @@ function renderCalendar() {
     col.style.cssText = 'flex:1;min-width:0;position:relative;border-left:1px solid var(--border-light)';
     const header = document.createElement('div');
     header.className = 'day-header';
-    header.innerHTML = `<span>周${dayNames[di]}</span><span class="day-num${isToday(d)?' today':''}">${d.getDate()}</span>`;
+    header.innerHTML = `<span style="font-size:${isMobile?'11px':'13px'}">周${dayNames[di]}</span><span class="day-num${isToday(d)?' today':''}">${d.getDate()}</span>`;
     col.appendChild(header);
     const slotsWrap = document.createElement('div');
     slotsWrap.style.cssText = 'position:relative';
     slotsWrap.dataset.date = dateStr;
+    const slotH = isMobile ? 52 : 56;
     for (let h = 0; h < 24; h++) {
       const slot = document.createElement('div');
       slot.className = 'hour-slot';
       slot.dataset.hour = h;
+      if (isMobile) slot.style.height = slotH + 'px';
       slotsWrap.appendChild(slot);
     }
     const dayEvents = getFilteredEvents(dateStr);
@@ -650,7 +781,7 @@ function renderCalendar() {
       const mins = now.getHours() * 60 + now.getMinutes();
       const indicator = document.createElement('div');
       indicator.className = 'time-indicator';
-      indicator.style.top = (mins / 60) * 56 + 'px';
+      indicator.style.top = (mins / 60) * slotH + 'px';
       indicator.innerHTML = '<div class="dot"></div><div class="line"></div>';
       slotsWrap.appendChild(indicator);
     }
@@ -1059,7 +1190,7 @@ function renderMembers(search = '') {
     const c = getUserColor(u);
     const roleLabel = u.role === 'super' ? '超级管理员' : u.role === 'admin' ? '管理员' : '普通成员';
     const roleClass = u.role === 'super' ? 'role-super' : u.role === 'admin' ? 'role-admin' : 'role-member';
-    const roleIcon = u.role === 'super' ? '👑' : u.role === 'admin' ? '⭐' : '';
+    const roleIcon = u.role === 'super' ? '<span class="role-icon">👑</span>' : u.role === 'admin' ? '<span class="role-icon">⭐</span>' : '';
     html += `<div class="member-card">
       <div class="avatar" style="background:${c}">${getInitial(u.name)}</div>
       <div class="info"><div class="name">${roleIcon} ${esc(u.name)}</div><span class="role-tag ${roleClass}">${roleLabel}</span></div>
