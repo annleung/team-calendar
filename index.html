@@ -224,9 +224,9 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 <div id="page-setup" class="page active auth-page">
 <div class="auth-card">
 <div class="logo"><div class="icon">📅</div><h1>团队日程管理</h1><p>首次使用，请创建超级管理员账号</p></div>
-<div class="input-group"><label>姓名（账号名）</label><input id="setup-name" placeholder="请输入您的姓名" maxlength="20"></div>
-<div class="input-group"><label>密码</label><input id="setup-pwd" type="password" placeholder="至少 6 位"></div>
-<div class="input-group"><label>确认密码</label><input id="setup-pwd2" type="password" placeholder="再次输入密码"></div>
+<div class="input-group"><label>姓名（账号名）</label><input id="setup-name" placeholder="请输入您的姓名" maxlength="20" onkeydown="if(event.key==='Enter')doSetup()"></div>
+<div class="input-group"><label>密码</label><input id="setup-pwd" type="password" placeholder="至少 6 位" onkeydown="if(event.key==='Enter')doSetup()"></div>
+<div class="input-group"><label>确认密码</label><input id="setup-pwd2" type="password" placeholder="再次输入密码" onkeydown="if(event.key==='Enter')doSetup()"></div>
 <button class="btn btn-primary btn-block btn-lg" onclick="doSetup()" style="margin-top:8px">创建并开始使用</button>
 </div>
 </div>
@@ -235,8 +235,8 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 <div id="page-login" class="page auth-page">
 <div class="auth-card">
 <div class="logo"><div class="icon">📅</div><h1>团队日程管理</h1><p>请登录您的账号</p></div>
-<div class="input-group"><label>姓名</label><input id="login-name" placeholder="请输入姓名"></div>
-<div class="input-group"><label>密码</label><input id="login-pwd" type="password" placeholder="请输入密码"></div>
+<div class="input-group"><label>姓名</label><input id="login-name" placeholder="请输入姓名" onkeydown="if(event.key==='Enter')doLogin()"></div>
+<div class="input-group"><label>密码</label><input id="login-pwd" type="password" placeholder="请输入密码" onkeydown="if(event.key==='Enter')doLogin()"></div>
 <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);margin-bottom:20px;cursor:pointer"><input type="checkbox" id="login-remember" checked style="accent-color:var(--primary)"> 记住我</label>
 <button class="btn btn-primary btn-block btn-lg" onclick="doLogin()">登 录</button>
 </div>
@@ -696,7 +696,7 @@ function renderFilterDropdown() {
   html += '<div class="divider" style="height:1px;background:var(--border-light);margin:4px 8px"></div>';
   allUsers.forEach(u => {
     if (!u.visible && !isSuperAdmin() && u.id !== currentUser.id) return;
-    html += `<button class="${filterUserId==u.id?'selected':''}" onclick="setFilter(${u.id})"><span class="dot" style="background:${getUserColor(u)}"></span>${esc(u.name)}${u.role==='super'?' 👑':u.role==='admin'?' ⭐':''}${!u.visible&&isAdmin()?'<span class="hidden-tag">已隐藏</span>':''}</button>`;
+    html += `<button class="${filterUserId==u.id?'selected':''}" onclick="setFilter(${u.id})"><span class="dot" style="background:${getUserColor(u)}"></span>${esc(u.name)}${u.role==='super'?' 👑':u.role==='admin'?' ⭐':''}</button>`;
   });
   dd.innerHTML = html;
   const label = document.getElementById('filter-label');
@@ -880,9 +880,7 @@ function renderMembers(search = '') {
     html += `<div class="member-card">
       <div class="avatar" style="background:${c}">${getInitial(u.name)}</div>
       <div class="info"><div class="name">${roleIcon} ${esc(u.name)}</div><span class="role-tag ${roleClass}">${roleLabel}</span></div>
-      <div class="vis-status vis-toggle"><div class="vis-dot" style="background:${u.visible?'var(--success)':'var(--error)'}"></div><span>${u.visible?'可见':'不可见'}</span>
-        ${isAdmin()&&u.id!==currentUser.id?`<div class="toggle${u.visible?' on':''}" onclick="toggleVisibility(${u.id},${u.visible})" style="margin-left:8px"></div>`:''}
-      </div>
+      ${isSuperAdmin()?`<div class="vis-status vis-toggle"><div class="vis-dot" style="background:${u.visible?'var(--success)':'var(--error)'}"></div><span>${u.visible?'可见':'不可见'}</span>${u.id!==currentUser.id?`<div class="toggle${u.visible?' on':''}" onclick="toggleVisibility(${u.id},${u.visible})" style="margin-left:8px"></div>`:''}</div>`:''}
       <div class="actions">${isAdmin()&&u.id!==currentUser.id?`<button class="more-btn" onclick="event.stopPropagation();toggleMemberMenu(${u.id})">···</button>
         <div class="member-menu" id="member-menu-${u.id}">
           <button onclick="openResetPwd(${u.id},'${esc(u.name)}')">🔄 重置密码</button>
