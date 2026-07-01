@@ -4,7 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>团队日程管理</title>
-<script src="https://cdn.staticfile.net/supabase-js/2.39.0/supabase.min.js"></script>
+<!-- 预连接关键域名（提前建立 TLS，省 0.3-0.5s） -->
+<link rel="dns-prefetch" href="https://unpkg.com">
+<link rel="dns-prefetch" href="https://mbdkqwtvxaijiwppgpxa.supabase.co">
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://mbdkqwtvxaijiwppgpxa.supabase.co" crossorigin>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
