@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>团队日程管理</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -100,6 +100,8 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .day-col{position:relative;border-left:1px solid var(--border-light);min-height:calc(56px * 24)}
 .day-col .hour-slot{height:56px;border-bottom:1px solid var(--border-light);cursor:pointer;transition:background .1s}
 .day-col .hour-slot:hover{background:var(--primary-light)}
+.day-col .hour-slot.drag-selecting{background:var(--primary-light)}
+.day-col .hour-slot.drag-selected{background:rgba(0,122,255,.15);border-bottom-color:rgba(0,122,255,.3)}
 .day-col.today-col{background:rgba(0,122,255,.02)}
 .event-block{position:absolute;left:2px;right:2px;border-radius:var(--r-sm);padding:3px 6px;font-size:11px;overflow:hidden;cursor:pointer;z-index:2;border-left:3px solid;transition:box-shadow .15s,transform .15s}
 .event-block:hover{box-shadow:var(--shadow-md);transform:scale(1.01)}
@@ -610,10 +612,11 @@ function renderCalendar() {
     col.appendChild(header);
     const slotsWrap = document.createElement('div');
     slotsWrap.style.cssText = 'position:relative';
+    slotsWrap.dataset.date = dateStr;
     for (let h = 0; h < 24; h++) {
       const slot = document.createElement('div');
       slot.className = 'hour-slot';
-      slot.onclick = ((hh, ds) => () => openCreateAt(ds, hh))(h, dateStr);
+      slot.dataset.hour = h;
       slotsWrap.appendChild(slot);
     }
     const dayEvents = getFilteredEvents(dateStr);
@@ -639,6 +642,85 @@ function renderCalendar() {
   });
   if (isMobile) setupMobileSwipe(body, days, mobileDay);
   renderFilterDropdown();
+  setupDragSelect();
+}
+
+// ===== DRAG SELECT TIME RANGE =====
+let dragState = null; // { date, startHour, endHour, slots: [] }
+
+function setupDragSelect() {
+  const body = document.getElementById('cal-body');
+  if (!body) return;
+
+  body.addEventListener('mousedown', e => {
+    const slot = e.target.closest('.hour-slot');
+    if (!slot) return;
+    const slotsWrap = slot.parentElement;
+    if (!slotsWrap || !slotsWrap.dataset.date) return;
+    // Don't start drag on event blocks
+    if (e.target.closest('.event-block')) return;
+    e.preventDefault();
+    const hour = parseInt(slot.dataset.hour);
+    dragState = {
+      date: slotsWrap.dataset.date,
+      startHour: hour,
+      endHour: hour,
+      active: true
+    };
+    slot.classList.add('drag-selecting');
+    dragState.slots = [slot];
+  });
+
+  body.addEventListener('mousemove', e => {
+    if (!dragState || !dragState.active) return;
+    const slot = e.target.closest('.hour-slot');
+    if (!slot) return;
+    const slotsWrap = slot.parentElement;
+    if (!slotsWrap || slotsWrap.dataset.date !== dragState.date) return;
+    const hour = parseInt(slot.dataset.hour);
+    dragState.endHour = hour;
+    // Highlight range
+    const minH = Math.min(dragState.startHour, dragState.endHour);
+    const maxH = Math.max(dragState.startHour, dragState.endHour);
+    // Clear previous
+    dragState.slots.forEach(s => s.classList.remove('drag-selecting'));
+    dragState.slots = [];
+    const allSlots = slotsWrap.querySelectorAll('.hour-slot');
+    for (let h = minH; h <= maxH; h++) {
+      allSlots[h].classList.add('drag-selecting');
+      dragState.slots.push(allSlots[h]);
+    }
+  });
+}
+
+document.addEventListener('mouseup', () => {
+  if (!dragState || !dragState.active) return;
+  // Clean up highlights
+  dragState.slots.forEach(s => s.classList.remove('drag-selecting'));
+  const minH = Math.min(dragState.startHour, dragState.endHour);
+  const maxH = Math.max(dragState.startHour, dragState.endHour);
+  const date = dragState.date;
+  dragState.active = false;
+  dragState = null;
+  // Open create form with time range
+  openCreateAtRange(date, minH, maxH + 1);
+});
+
+function openCreateAtRange(date, startHour, endHour) {
+  if (endHour > 23) endHour = 23;
+  if (startHour === endHour) endHour = Math.min(startHour + 1, 23);
+  editingEventId = null;
+  document.getElementById('form-title').textContent = '新建日程';
+  document.getElementById('btn-save-event').textContent = '创建';
+  document.getElementById('ev-title').value = '';
+  document.getElementById('ev-date').value = date;
+  document.getElementById('ev-start').value = `${String(startHour).padStart(2,'0')}:00`;
+  document.getElementById('ev-end').value = `${String(endHour).padStart(2,'0')}:00`;
+  document.getElementById('ev-desc').value = '';
+  uploadImages = [];
+  renderImagePreview();
+  openModal('modal-event-form');
+  setTimeout(() => document.getElementById('ev-title').focus(), 100);
 }
 
 let mobileDayIndex = 0;
@@ -736,20 +818,38 @@ async function saveEvent() {
   if (!startTime) return toast('请选择开始时间', 'error');
   if (!endTime) return toast('请选择结束时间', 'error');
   if (endTime <= startTime) return toast('结束时间须晚于开始时间', 'error');
+  // Show loading on button
+  const btn = document.getElementById('btn-save-event');
+  const btnOrigText = btn.textContent;
+  btn.disabled = true; btn.textContent = '保存中...';
   try {
     const evData = { title, date, start_time: startTime, end_time: endTime, description: desc, images: [...uploadImages], user_id: currentUser.id, updated_at: new Date().toISOString() };
+    // Optimistic UI: add locally first for instant feedback
+    const localEv = { ...evData, id: editingEventId || Date.now(), created_at: new Date().toISOString() };
     if (editingEventId) {
-      await updateEvent(editingEventId, evData);
+      const idx = allEvents.findIndex(e => e.id === editingEventId);
+      if (idx >= 0) allEvents[idx] = { ...allEvents[idx], ...localEv };
       toast('日程已更新', 'success');
     } else {
-      evData.created_at = new Date().toISOString();
-      await insertEvent(evData);
+      allEvents.push(localEv);
       toast('日程已创建', 'success');
     }
     closeModal('modal-event-form');
-    allEvents = await fetchEvents();
     renderCalendar();
+    // Sync with server in background
+    if (editingEventId) {
+      await updateEvent(editingEventId, evData);
+    } else {
+      const serverEv = await insertEvent(evData);
+      // Replace local temp ID with real server ID
+      const tempIdx = allEvents.findIndex(e => e.id === localEv.id);
+      if (tempIdx >= 0) allEvents[tempIdx] = serverEv;
+      renderCalendar();
+    }
+    // Refresh full list to stay in sync
+    fetchEvents().then(data => { allEvents = data; renderCalendar(); }).catch(() => {});
   } catch (e) { toast('保存失败: ' + e.message, 'error'); }
+  btn.disabled = false; btn.textContent = btnOrigText;
 }
 
 function showEventDetail(id) {
