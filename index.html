@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>团队日程管理</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -26,8 +27,6 @@ html,body{height:100%;font-family:var(--font);color:var(--text1);background:var(
 a{color:var(--primary);text-decoration:none}
 button{font-family:var(--font);cursor:pointer;border:none;outline:none;font-size:15px}
 input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
-
-/* ===== BUTTONS ===== */
 .btn{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 20px;border-radius:var(--r-md);font-weight:500;transition:all .15s}
 .btn:active{transform:scale(.98)}
 .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}
@@ -39,8 +38,6 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .btn-lg{height:48px;padding:0 28px;font-size:16px}
 .btn:disabled{opacity:.4;pointer-events:none}
 .btn-block{width:100%}
-
-/* ===== INPUTS ===== */
 .input-group{margin-bottom:16px}
 .input-group label{display:block;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:6px}
 .input-group input,.input-group textarea,.input-group select{width:100%;height:42px;padding:0 14px;border:1.5px solid var(--border);border-radius:var(--r-md);background:var(--bg);color:var(--text1);transition:border .15s}
@@ -49,26 +46,18 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .input-group.error input,.input-group.error textarea{border-color:var(--error);background:var(--error-bg)}
 .input-group .error-msg{font-size:12px;color:var(--error);margin-top:4px}
 .input-group input::placeholder,.input-group textarea::placeholder{color:var(--text3)}
-
-/* ===== TOGGLE ===== */
 .toggle{position:relative;width:44px;height:26px;border-radius:13px;background:var(--border-light);cursor:pointer;transition:background .15s;flex-shrink:0}
 .toggle.on{background:var(--success)}
 .toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15);transition:transform .15s}
 .toggle.on::after{transform:translateX(18px)}
-
-/* ===== PAGES ===== */
 .page{display:none;height:100vh;flex-direction:column}
 .page.active{display:flex}
-
-/* ===== SETUP / LOGIN ===== */
 .auth-page{align-items:center;justify-content:center;background:var(--bg2);padding:20px}
 .auth-card{background:var(--bg);border-radius:var(--r-xl);padding:40px 36px;width:100%;max-width:400px;box-shadow:var(--shadow-lg)}
 .auth-card .logo{text-align:center;margin-bottom:24px}
 .auth-card .logo .icon{font-size:48px;margin-bottom:12px}
 .auth-card .logo h1{font-size:22px;font-weight:600}
 .auth-card .logo p{font-size:14px;color:var(--text2);margin-top:6px}
-
-/* ===== NAVBAR ===== */
 .navbar{height:var(--nav-h);background:var(--bg);border-bottom:1px solid var(--border-light);display:flex;align-items:center;padding:0 24px;flex-shrink:0;gap:16px;z-index:10}
 .navbar .brand{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;white-space:nowrap}
 .navbar .nav-links{display:flex;gap:4px;margin-left:24px}
@@ -86,8 +75,6 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .user-dropdown button:hover{background:var(--bg2)}
 .user-dropdown button.danger{color:var(--error)}
 .user-dropdown .divider{height:1px;background:var(--border-light);margin:4px 0}
-
-/* ===== CALENDAR PAGE ===== */
 .cal-header{display:flex;align-items:center;padding:16px 24px;gap:12px;flex-wrap:wrap;background:var(--bg);border-bottom:1px solid var(--border-light)}
 .week-nav{display:flex;align-items:center;gap:8px}
 .week-nav .arrow{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--bg2);font-size:18px;color:var(--text2);transition:all .15s}
@@ -103,8 +90,6 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .filter-dropdown button.selected{background:var(--primary-light);color:var(--primary);font-weight:500}
 .filter-dropdown .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .filter-dropdown .hidden-tag{font-size:11px;color:var(--text3);margin-left:auto}
-
-/* ===== CALENDAR GRID ===== */
 .cal-body{flex:1;overflow:auto;background:var(--bg);position:relative}
 .cal-grid{display:grid;min-width:100%;position:relative}
 .cal-grid .time-col{width:56px;flex-shrink:0}
@@ -116,19 +101,13 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .day-col .hour-slot{height:56px;border-bottom:1px solid var(--border-light);cursor:pointer;transition:background .1s}
 .day-col .hour-slot:hover{background:var(--primary-light)}
 .day-col.today-col{background:rgba(0,122,255,.02)}
-
-/* ===== EVENT BLOCK ===== */
 .event-block{position:absolute;left:2px;right:2px;border-radius:var(--r-sm);padding:3px 6px;font-size:11px;overflow:hidden;cursor:pointer;z-index:2;border-left:3px solid;transition:box-shadow .15s,transform .15s}
 .event-block:hover{box-shadow:var(--shadow-md);transform:scale(1.01)}
 .event-block .ev-title{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .event-block .ev-time{font-size:10px;opacity:.8;margin-top:1px}
-
-/* ===== TIME INDICATOR ===== */
 .time-indicator{position:absolute;left:0;right:0;z-index:3;pointer-events:none;display:flex;align-items:center}
 .time-indicator .dot{width:8px;height:8px;border-radius:50%;background:var(--error);margin-left:-4px;flex-shrink:0}
 .time-indicator .line{flex:1;height:2px;background:var(--error)}
-
-/* ===== MODAL ===== */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.show{display:flex;animation:fadeIn .2s}
 .modal{background:var(--bg);border-radius:var(--r-lg);width:100%;max-width:500px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-xl);animation:slideUp .25s ease}
@@ -138,8 +117,6 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .modal-close:hover{background:var(--bg3);color:var(--text1)}
 .modal-body{padding:20px 24px 24px}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;padding-top:16px;border-top:1px solid var(--border-light);margin-top:16px}
-
-/* ===== IMAGE UPLOAD ===== */
 .img-upload-area{display:flex;flex-wrap:wrap;gap:8px;padding:12px;border:2px dashed var(--border);border-radius:var(--r-md);min-height:80px;transition:border-color .15s,background .15s;cursor:pointer}
 .img-upload-area:hover,.img-upload-area.dragover{border-color:var(--primary);background:var(--primary-light)}
 .img-thumb{position:relative;width:64px;height:64px;border-radius:var(--r-sm);overflow:hidden}
@@ -149,8 +126,6 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .img-add-btn{width:64px;height:64px;border-radius:var(--r-sm);border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);font-size:11px;gap:2px;cursor:pointer;transition:all .15s}
 .img-add-btn:hover{border-color:var(--primary);color:var(--primary)}
 .img-add-btn .plus{font-size:22px;line-height:1}
-
-/* ===== LIGHTBOX ===== */
 .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;display:none;align-items:center;justify-content:center;flex-direction:column}
 .lightbox.show{display:flex;animation:fadeIn .2s}
 .lightbox img{max-width:90vw;max-height:75vh;object-fit:contain;border-radius:var(--r-md)}
@@ -159,8 +134,6 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .lightbox .lb-prev{left:16px}
 .lightbox .lb-next{right:16px}
 .lightbox .lb-counter{color:rgba(255,255,255,.7);font-size:14px;margin-top:16px}
-
-/* ===== TEAM PAGE ===== */
 .team-page .team-head{padding:24px;background:var(--bg);border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .team-page .team-head h1{font-size:22px;font-weight:600}
 .team-page .team-actions{display:flex;gap:10px;align-items:center}
@@ -187,13 +160,9 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .member-menu button:hover{background:var(--bg2)}
 .member-menu button.danger{color:var(--error)}
 .member-menu .divider{height:1px;background:var(--border-light);margin:4px 0}
-
-/* ===== SETTINGS PAGE ===== */
 .settings-page .settings-content{max-width:500px;margin:0 auto;padding:32px 24px}
 .settings-page h1{font-size:22px;font-weight:600;margin-bottom:24px}
 .settings-card{background:var(--bg);border-radius:var(--r-lg);padding:24px;box-shadow:var(--shadow-sm)}
-
-/* ===== TOAST ===== */
 .toast-container{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:500;display:flex;flex-direction:column;gap:8px;pointer-events:none}
 .toast{padding:12px 20px;border-radius:var(--r-md);background:var(--bg);box-shadow:var(--shadow-lg);font-size:14px;display:flex;align-items:center;gap:8px;pointer-events:auto;animation:slideDown .25s;min-width:200px;max-width:400px}
 .toast.success{border-left:4px solid var(--success)}
@@ -201,8 +170,6 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .toast.warning{border-left:4px solid var(--warning)}
 .toast.info{border-left:4px solid var(--primary)}
 .toast.fade-out{animation:fadeOut .2s forwards}
-
-/* ===== CONFIRM DIALOG ===== */
 .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);z-index:250;display:none;align-items:center;justify-content:center;padding:20px}
 .confirm-overlay.show{display:flex;animation:fadeIn .15s}
 .confirm-box{background:var(--bg);border-radius:var(--r-lg);padding:28px;width:100%;max-width:380px;text-align:center;box-shadow:var(--shadow-xl);animation:scaleIn .2s}
@@ -211,20 +178,14 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 .confirm-box p{font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.5}
 .confirm-box .confirm-actions{display:flex;gap:10px;justify-content:center}
 .confirm-box .confirm-actions .btn{min-width:100px}
-
-/* ===== EMPTY STATE ===== */
 .empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
 .empty-state .icon{font-size:48px;margin-bottom:12px}
 .empty-state p{font-size:14px}
-
-/* ===== BOTTOM TAB BAR (mobile) ===== */
 .tab-bar{display:none;height:var(--tab-h);background:var(--bg);border-top:1px solid var(--border-light);padding-bottom:env(safe-area-inset-bottom)}
 .tab-bar .tabs{display:flex;height:100%}
 .tab-bar .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;color:var(--text3);background:transparent;transition:color .15s}
 .tab-bar .tab.active{color:var(--primary)}
 .tab-bar .tab .tab-icon{font-size:22px}
-
-/* ===== ANIMATIONS ===== */
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes fadeOut{from{opacity:1}to{opacity:0}}
 @keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
@@ -232,8 +193,9 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 @keyframes scaleIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
 @keyframes pulse{0%{transform:scale(0)}60%{transform:scale(1.05)}100%{transform:scale(1)}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-
-/* ===== MOBILE ===== */
+.loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.8);z-index:999;display:flex;align-items:center;justify-content:center}
+.loading-spinner{width:40px;height:40px;border:3px solid var(--bg3);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:768px){
   :root{--nav-h:56px}
   .navbar{padding:0 16px;gap:10px}
@@ -256,7 +218,9 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 </head>
 <body>
 
-<!-- ===== SETUP PAGE ===== -->
+<div class="loading-overlay" id="loading-overlay"><div class="loading-spinner"></div></div>
+
+<!-- SETUP -->
 <div id="page-setup" class="page active auth-page">
 <div class="auth-card">
 <div class="logo"><div class="icon">📅</div><h1>团队日程管理</h1><p>首次使用，请创建超级管理员账号</p></div>
@@ -267,18 +231,18 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 </div>
 </div>
 
-<!-- ===== LOGIN PAGE ===== -->
+<!-- LOGIN -->
 <div id="page-login" class="page auth-page">
 <div class="auth-card">
 <div class="logo"><div class="icon">📅</div><h1>团队日程管理</h1><p>请登录您的账号</p></div>
 <div class="input-group"><label>姓名</label><input id="login-name" placeholder="请输入姓名"></div>
 <div class="input-group"><label>密码</label><input id="login-pwd" type="password" placeholder="请输入密码"></div>
-<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);margin-bottom:20px;cursor:pointer"><input type="checkbox" id="login-remember" style="accent-color:var(--primary)"> 记住我</label>
+<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);margin-bottom:20px;cursor:pointer"><input type="checkbox" id="login-remember" checked style="accent-color:var(--primary)"> 记住我</label>
 <button class="btn btn-primary btn-block btn-lg" onclick="doLogin()">登 录</button>
 </div>
 </div>
 
-<!-- ===== CALENDAR PAGE ===== -->
+<!-- CALENDAR -->
 <div id="page-calendar" class="page has-tabs">
 <div class="navbar">
 <div class="brand">📅 TeamCal</div>
@@ -303,7 +267,7 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 <div class="cal-header">
 <div class="week-nav">
 <button class="arrow" onclick="changeWeek(-1)">◀</button>
-<div class="week-title" id="week-title">2026年7月 第1周</div>
+<div class="week-title" id="week-title"></div>
 <button class="arrow" onclick="changeWeek(1)">▶</button>
 <button class="btn btn-outline btn-sm" onclick="goToday()" id="btn-today">今天</button>
 </div>
@@ -311,105 +275,71 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 <button class="btn btn-primary btn-sm" onclick="openCreateEvent()">＋ 新建日程</button>
 </div>
 <div class="cal-body" id="cal-body"></div>
-<div class="tab-bar">
-<div class="tabs">
+<div class="tab-bar"><div class="tabs">
 <button class="tab active" onclick="showPage('calendar')"><span class="tab-icon">📅</span>日历</button>
 <button class="tab" id="tab-team" onclick="showPage('team')" style="display:none"><span class="tab-icon">👥</span>团队</button>
 <button class="tab" onclick="showPage('settings')"><span class="tab-icon">⚙️</span>设置</button>
-</div>
-</div>
+</div></div>
 </div>
 
-<!-- ===== TEAM PAGE ===== -->
+<!-- TEAM -->
 <div id="page-team" class="page has-tabs">
 <div class="navbar">
 <div class="brand">📅 TeamCal</div>
-<div class="nav-links">
-<button onclick="showPage('calendar')">日历</button>
-<button class="active">团队管理</button>
-</div>
+<div class="nav-links"><button onclick="showPage('calendar')">日历</button><button class="active">团队管理</button></div>
 <div class="spacer"></div>
 <div class="user-menu">
 <button class="user-btn" onclick="toggleUserMenu()"><div class="avatar" id="nav-avatar2">A</div><span id="nav-username2">用户</span> <span style="font-size:10px">▾</span></button>
-<div class="user-dropdown" id="user-dropdown2">
-<button onclick="showPage('settings')">⚙️ 个人设置</button>
-<div class="divider"></div>
-<button class="danger" onclick="doLogout()">🚪 退出登录</button>
+<div class="user-dropdown" id="user-dropdown2"><button onclick="showPage('settings')">⚙️ 个人设置</button><div class="divider"></div><button class="danger" onclick="doLogout()">🚪 退出登录</button></div>
 </div>
 </div>
-</div>
-<div class="team-head">
-<h1>团队管理</h1>
-<div class="team-actions">
+<div class="team-head"><h1>团队管理</h1><div class="team-actions">
 <input class="search-input" placeholder="🔍 搜索成员..." oninput="renderMembers(this.value)">
 <button class="btn btn-primary btn-sm" onclick="openAddMember()">＋ 添加成员</button>
-</div>
-</div>
+</div></div>
 <div class="member-list" id="member-list"></div>
-<div class="tab-bar">
-<div class="tabs">
+<div class="tab-bar"><div class="tabs">
 <button class="tab" onclick="showPage('calendar')"><span class="tab-icon">📅</span>日历</button>
 <button class="tab active"><span class="tab-icon">👥</span>团队</button>
 <button class="tab" onclick="showPage('settings')"><span class="tab-icon">⚙️</span>设置</button>
-</div>
-</div>
+</div></div>
 </div>
 
-<!-- ===== SETTINGS PAGE ===== -->
+<!-- SETTINGS -->
 <div id="page-settings" class="page has-tabs settings-page">
 <div class="navbar">
 <div class="brand">📅 TeamCal</div>
-<div class="nav-links">
-<button onclick="showPage('calendar')">日历</button>
-<button id="nav-team2" onclick="showPage('team')" style="display:none">团队管理</button>
-</div>
+<div class="nav-links"><button onclick="showPage('calendar')">日历</button><button id="nav-team2" onclick="showPage('team')" style="display:none">团队管理</button></div>
 <div class="spacer"></div>
 <div class="user-menu">
 <button class="user-btn" onclick="toggleUserMenu()"><div class="avatar" id="nav-avatar3">A</div><span id="nav-username3">用户</span> <span style="font-size:10px">▾</span></button>
-<div class="user-dropdown" id="user-dropdown3">
-<button onclick="showPage('settings')">⚙️ 个人设置</button>
-<div class="divider"></div>
-<button class="danger" onclick="doLogout()">🚪 退出登录</button>
+<div class="user-dropdown" id="user-dropdown3"><button onclick="showPage('settings')">⚙️ 个人设置</button><div class="divider"></div><button class="danger" onclick="doLogout()">🚪 退出登录</button></div>
 </div>
 </div>
-</div>
-<div class="settings-content">
-<h1>个人设置</h1>
-<div class="settings-card">
-<h3 style="margin-bottom:16px;font-size:16px">修改密码</h3>
+<div class="settings-content"><h1>个人设置</h1>
+<div class="settings-card"><h3 style="margin-bottom:16px;font-size:16px">修改密码</h3>
 <div class="input-group"><label>当前密码</label><input id="pwd-old" type="password" placeholder="请输入当前密码"></div>
 <div class="input-group"><label>新密码</label><input id="pwd-new" type="password" placeholder="至少 6 位"></div>
 <div class="input-group"><label>确认新密码</label><input id="pwd-new2" type="password" placeholder="再次输入新密码"></div>
 <button class="btn btn-primary" onclick="doChangePassword()">保存密码</button>
-</div>
-</div>
-<div class="tab-bar">
-<div class="tabs">
+</div></div>
+<div class="tab-bar"><div class="tabs">
 <button class="tab" onclick="showPage('calendar')"><span class="tab-icon">📅</span>日历</button>
 <button class="tab" id="tab-team2" onclick="showPage('team')" style="display:none"><span class="tab-icon">👥</span>团队</button>
 <button class="tab active" onclick="showPage('settings')"><span class="tab-icon">⚙️</span>设置</button>
-</div>
-</div>
+</div></div>
 </div>
 
-<!-- ===== EVENT DETAIL MODAL ===== -->
+<!-- EVENT DETAIL MODAL -->
 <div class="modal-overlay" id="modal-detail" onclick="if(event.target===this)closeModal('modal-detail')">
-<div class="modal">
-<div class="modal-head"><h2 id="detail-title">日程详情</h2><button class="modal-close" onclick="closeModal('modal-detail')">✕</button></div>
-<div class="modal-body">
-<div id="detail-content"></div>
-<div class="modal-actions">
-<button class="btn btn-secondary" onclick="editCurrentEvent()">✏️ 编辑</button>
-<button class="btn btn-danger" onclick="deleteCurrentEvent()">🗑 删除</button>
-</div>
-</div>
-</div>
-</div>
+<div class="modal"><div class="modal-head"><h2 id="detail-title">日程详情</h2><button class="modal-close" onclick="closeModal('modal-detail')">✕</button></div>
+<div class="modal-body"><div id="detail-content"></div>
+<div class="modal-actions"><button class="btn btn-secondary" onclick="editCurrentEvent()">✏️ 编辑</button><button class="btn btn-danger" onclick="deleteCurrentEvent()">🗑 删除</button></div>
+</div></div></div>
 
-<!-- ===== EVENT FORM MODAL ===== -->
+<!-- EVENT FORM MODAL -->
 <div class="modal-overlay" id="modal-event-form" onclick="if(event.target===this)closeModal('modal-event-form')">
-<div class="modal">
-<div class="modal-head"><h2 id="form-title">新建日程</h2><button class="modal-close" onclick="closeModal('modal-event-form')">✕</button></div>
+<div class="modal"><div class="modal-head"><h2 id="form-title">新建日程</h2><button class="modal-close" onclick="closeModal('modal-event-form')">✕</button></div>
 <div class="modal-body">
 <div class="input-group"><label>标题 *</label><input id="ev-title" placeholder="输入日程标题" maxlength="50"></div>
 <div class="input-group"><label>日期 *</label><input id="ev-date" type="date"></div>
@@ -424,311 +354,277 @@ input,textarea,select{font-family:var(--font);outline:none;font-size:15px}
 </div>
 <input type="file" id="img-file-input" accept="image/*" multiple style="display:none" onchange="handleFiles(this.files)">
 </div>
-<div class="modal-actions">
-<button class="btn btn-secondary" onclick="closeModal('modal-event-form')">取消</button>
-<button class="btn btn-primary" onclick="saveEvent()" id="btn-save-event">创建</button>
-</div>
-</div>
-</div>
-</div>
+<div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modal-event-form')">取消</button><button class="btn btn-primary" onclick="saveEvent()" id="btn-save-event">创建</button></div>
+</div></div></div>
 
-<!-- ===== ADD MEMBER MODAL ===== -->
+<!-- ADD MEMBER MODAL -->
 <div class="modal-overlay" id="modal-add-member" onclick="if(event.target===this)closeModal('modal-add-member')">
-<div class="modal">
-<div class="modal-head"><h2 id="member-modal-title">添加成员</h2><button class="modal-close" onclick="closeModal('modal-add-member')">✕</button></div>
+<div class="modal"><div class="modal-head"><h2>添加成员</h2><button class="modal-close" onclick="closeModal('modal-add-member')">✕</button></div>
 <div class="modal-body">
 <div class="input-group"><label>姓名 *</label><input id="m-name" placeholder="请输入姓名" maxlength="20"></div>
 <div class="input-group"><label>初始密码 *</label><input id="m-pwd" type="password" placeholder="至少 6 位"></div>
-<div class="modal-actions">
-<button class="btn btn-secondary" onclick="closeModal('modal-add-member')">取消</button>
-<button class="btn btn-primary" onclick="saveMember()">创建</button>
-</div>
-</div>
-</div>
-</div>
+<div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modal-add-member')">取消</button><button class="btn btn-primary" onclick="saveMember()">创建</button></div>
+</div></div></div>
 
-<!-- ===== RESET PASSWORD MODAL ===== -->
+<!-- RESET PASSWORD MODAL -->
 <div class="modal-overlay" id="modal-reset-pwd" onclick="if(event.target===this)closeModal('modal-reset-pwd')">
-<div class="modal">
-<div class="modal-head"><h2>重置密码</h2><button class="modal-close" onclick="closeModal('modal-reset-pwd')">✕</button></div>
+<div class="modal"><div class="modal-head"><h2>重置密码</h2><button class="modal-close" onclick="closeModal('modal-reset-pwd')">✕</button></div>
 <div class="modal-body">
-<p style="color:var(--text2);margin-bottom:16px" id="reset-pwd-label">为 XXX 设置新密码</p>
+<p style="color:var(--text2);margin-bottom:16px" id="reset-pwd-label"></p>
 <div class="input-group"><label>新密码 *</label><input id="reset-pwd" type="password" placeholder="至少 6 位"></div>
 <div class="input-group"><label>确认新密码</label><input id="reset-pwd2" type="password" placeholder="再次输入"></div>
-<div class="modal-actions">
-<button class="btn btn-secondary" onclick="closeModal('modal-reset-pwd')">取消</button>
-<button class="btn btn-primary" onclick="doResetPassword()">确认重置</button>
-</div>
-</div>
-</div>
-</div>
+<div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modal-reset-pwd')">取消</button><button class="btn btn-primary" onclick="doResetPassword()">确认重置</button></div>
+</div></div></div>
 
-<!-- ===== CONFIRM DIALOG ===== -->
-<div class="confirm-overlay" id="confirm-dialog">
-<div class="confirm-box">
-<div class="confirm-icon" id="confirm-icon">⚠️</div>
-<h3 id="confirm-title">确认操作？</h3>
-<p id="confirm-msg">此操作不可恢复。</p>
+<!-- CONFIRM -->
+<div class="confirm-overlay" id="confirm-dialog"><div class="confirm-box">
+<div class="confirm-icon" id="confirm-icon">⚠️</div><h3 id="confirm-title">确认</h3><p id="confirm-msg"></p>
 <div id="confirm-extra"></div>
-<div class="confirm-actions">
-<button class="btn btn-secondary" onclick="closeConfirm()">取消</button>
-<button class="btn btn-danger" id="confirm-ok" onclick="">确认</button>
-</div>
-</div>
-</div>
+<div class="confirm-actions"><button class="btn btn-secondary" onclick="closeConfirm()">取消</button><button class="btn btn-danger" id="confirm-ok">确认</button></div>
+</div></div>
 
-<!-- ===== LIGHTBOX ===== -->
-<div class="lightbox" id="lightbox">
-<button class="lb-close" onclick="closeLightbox()">✕</button>
-<button class="lb-nav lb-prev" onclick="lbNav(-1)">◀</button>
-<img id="lb-img" src="">
-<button class="lb-nav lb-next" onclick="lbNav(1)">▶</button>
-<div class="lb-counter" id="lb-counter">1 / 1</div>
-</div>
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox"><button class="lb-close" onclick="closeLightbox()">✕</button>
+<button class="lb-nav lb-prev" onclick="lbNav(-1)">◀</button><img id="lb-img" src=""><button class="lb-nav lb-next" onclick="lbNav(1)">▶</button>
+<div class="lb-counter" id="lb-counter"></div></div>
 
-<!-- ===== TOAST CONTAINER ===== -->
 <div class="toast-container" id="toast-container"></div>
 
 <script>
-// ===== DB LAYER =====
-const DB_NAME='teamcal',DB_VER=1;
-let db;
-function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains('users'))d.createObjectStore('users',{keyPath:'id',autoIncrement:true});if(!d.objectStoreNames.contains('events'))d.createObjectStore('events',{keyPath:'id',autoIncrement:true})};r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=e=>rej(e)})}
-function dbGetAll(store){return new Promise((res,rej)=>{const tx=db.transaction(store,'readonly');const s=tx.objectStore(store);const r=s.getAll();r.onsuccess=()=>res(r.result);r.onerror=e=>rej(e)})}
-function dbGet(store,id){return new Promise((res,rej)=>{const tx=db.transaction(store,'readonly');const r=tx.objectStore(store).get(id);r.onsuccess=()=>res(r.result);r.onerror=e=>rej(e)})}
-function dbPut(store,obj){return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');const r=tx.objectStore(store).put(obj);r.onsuccess=()=>res(r.result);r.onerror=e=>rej(e)})}
-function dbAdd(store,obj){return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');const r=tx.objectStore(store).add(obj);r.onsuccess=()=>res(r.result);r.onerror=e=>rej(e)})}
-function dbDel(store,id){return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');const r=tx.objectStore(store).delete(id);r.onsuccess=()=>res();r.onerror=e=>rej(e)})}
+// ===== SUPABASE CONFIG =====
+const SUPABASE_URL = 'https://mbdkqwtvxaijiwppgpxa.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1iZGtxd3R2eGFpaml3cHBncHhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4ODk2NjcsImV4cCI6MjA5ODQ2NTY2N30.mCzMZ4ex0HFpCaOl79-wA_LolbXujy43wySiIDrdPQM';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ===== STATE =====
-let currentUser=null;
-let allUsers=[];
-let allEvents=[];
-let currentWeekStart=getMonday(new Date());
-let filterUserId='all'; // 'all', 'mine', or userId
-let editingEventId=null;
-let currentDetailEventId=null;
-let uploadImages=[]; // base64 strings pending upload
-let lbImages=[];let lbIndex=0;
-let resetPwdTargetId=null;
-const COLORS=['#007AFF','#AF52DE','#FF2D55','#FF9500','#34C759','#5AC8FA','#5856D6','#FF3B30','#FFCC00','#00C7BE'];
+let currentUser = null;
+let allUsers = [];
+let allEvents = [];
+let currentWeekStart = getMonday(new Date());
+let filterUserId = 'all';
+let editingEventId = null;
+let currentDetailEventId = null;
+let uploadImages = [];
+let lbImages = []; let lbIndex = 0;
+let resetPwdTargetId = null;
+const COLORS = ['#007AFF','#AF52DE','#FF2D55','#FF9500','#34C759','#5AC8FA','#5856D6','#FF3B30','#FFCC00','#00C7BE'];
 
-function getMonday(d){const dt=new Date(d);const day=dt.getDay();const diff=dt.getDate()-day+(day===0?-6:1);dt.setDate(diff);dt.setHours(0,0,0,0);return dt}
-function fmtDate(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');return`${y}-${m}-${dd}`}
-function fmtDateCN(d){return`${d.getMonth()+1}月${d.getDate()}日`}
-function fmtDateFull(d){const w=['日','一','二','三','四','五','六'];return`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（周${w[d.getDay()]}）`}
-function isToday(d){const t=new Date();return d.getFullYear()===t.getFullYear()&&d.getMonth()===t.getMonth()&&d.getDate()===t.getDate()}
-function getUserColor(user){const idx=(user.id-1)%COLORS.length;return COLORS[idx]}
-function getUserColorBg(user){return getUserColor(user)+'33'}
-function getInitial(name){return name?name.charAt(0):'?'}
-function isSuperAdmin(){return currentUser&&currentUser.role==='super'}
-function isAdmin(){return currentUser&&(currentUser.role==='admin'||currentUser.role==='super')}
+// ===== HELPERS =====
+function getMonday(d) { const dt = new Date(d); const day = dt.getDay(); const diff = dt.getDate() - day + (day === 0 ? -6 : 1); dt.setDate(diff); dt.setHours(0,0,0,0); return dt; }
+function fmtDate(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function fmtDateCN(d) { return `${d.getMonth()+1}月${d.getDate()}日`; }
+function fmtDateFull(d) { const w = ['日','一','二','三','四','五','六']; return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（周${w[d.getDay()]}）`; }
+function isToday(d) { const t = new Date(); return d.getFullYear() === t.getFullYear() && d.getMonth() === t.getMonth() && d.getDate() === t.getDate(); }
+function getUserColor(user) { return COLORS[(user.id - 1) % COLORS.length]; }
+function getInitial(name) { return name ? name.charAt(0) : '?'; }
+function isSuperAdmin() { return currentUser && currentUser.role === 'super'; }
+function isAdmin() { return currentUser && (currentUser.role === 'admin' || currentUser.role === 'super'); }
+function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+// ===== SUPABASE CRUD =====
+async function fetchUsers() { const { data, error } = await sb.from('users').select('*').order('id'); if (error) throw error; return data || []; }
+async function fetchEvents() { const { data, error } = await sb.from('events').select('*').order('id'); if (error) throw error; return data || []; }
+async function insertUser(obj) { const { data, error } = await sb.from('users').insert(obj).select().single(); if (error) throw error; return data; }
+async function updateUser(id, obj) { const { data, error } = await sb.from('users').update(obj).eq('id', id).select().single(); if (error) throw error; return data; }
+async function deleteUser(id) { const { error } = await sb.from('users').delete().eq('id', id); if (error) throw error; }
+async function insertEvent(obj) { const { data, error } = await sb.from('events').insert(obj).select().single(); if (error) throw error; return data; }
+async function updateEvent(id, obj) { const { data, error } = await sb.from('events').update(obj).eq('id', id).select().single(); if (error) throw error; return data; }
+async function deleteEvent(id) { const { error } = await sb.from('events').delete().eq('id', id); if (error) throw error; }
 
 // ===== TOAST =====
-function toast(msg,type='info'){const c=document.getElementById('toast-container');const t=document.createElement('div');t.className=`toast ${type}`;const icons={success:'✅',error:'❌',warning:'⚠️',info:'ℹ️'};t.innerHTML=`<span>${icons[type]||''}</span><span>${msg}</span>`;c.appendChild(t);setTimeout(()=>{t.classList.add('fade-out');setTimeout(()=>t.remove(),200)},3000)}
+function toast(msg, type = 'info') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `toast ${type}`; const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' }; t.innerHTML = `<span>${icons[type]||''}</span><span>${msg}</span>`; c.appendChild(t); setTimeout(() => { t.classList.add('fade-out'); setTimeout(() => t.remove(), 200); }, 3000); }
 
 // ===== CONFIRM =====
-let confirmCallback=null;
-function showConfirm(title,msg,okText,okClass,cb,extra=''){document.getElementById('confirm-icon').textContent='⚠️';document.getElementById('confirm-title').textContent=title;document.getElementById('confirm-msg').innerHTML=msg;document.getElementById('confirm-extra').innerHTML=extra;const btn=document.getElementById('confirm-ok');btn.textContent=okText;btn.className=`btn ${okClass}`;confirmCallback=cb;document.getElementById('confirm-dialog').classList.add('show')}
-function closeConfirm(){document.getElementById('confirm-dialog').classList.remove('show');confirmCallback=null}
-document.getElementById('confirm-ok').onclick=()=>{if(confirmCallback)confirmCallback();closeConfirm()};
+let confirmCallback = null;
+function showConfirm(title, msg, okText, okClass, cb, extra = '') { document.getElementById('confirm-icon').textContent = '⚠️'; document.getElementById('confirm-title').textContent = title; document.getElementById('confirm-msg').innerHTML = msg; document.getElementById('confirm-extra').innerHTML = extra; const btn = document.getElementById('confirm-ok'); btn.textContent = okText; btn.className = `btn ${okClass}`; confirmCallback = cb; document.getElementById('confirm-dialog').classList.add('show'); }
+function closeConfirm() { document.getElementById('confirm-dialog').classList.remove('show'); confirmCallback = null; }
+document.getElementById('confirm-ok').onclick = () => { if (confirmCallback) confirmCallback(); closeConfirm(); };
 
 // ===== MODAL =====
-function openModal(id){document.getElementById(id).classList.add('show')}
-function closeModal(id){document.getElementById(id).classList.remove('show')}
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
 // ===== AUTH =====
-async function doSetup(){
-  const name=document.getElementById('setup-name').value.trim();
-  const pwd=document.getElementById('setup-pwd').value;
-  const pwd2=document.getElementById('setup-pwd2').value;
-  if(!name)return toast('请输入姓名','error');
-  if(name.length>20)return toast('姓名不能超过20个字符','error');
-  if(pwd.length<6)return toast('密码至少6位','error');
-  if(pwd!==pwd2)return toast('两次密码不一致','error');
-  const users=await dbGetAll('users');
-  if(users.find(u=>u.name===name))return toast('该姓名已被使用','error');
-  const id=await dbAdd('users',{name,password:pwd,role:'super',visible:true,createdAt:Date.now()});
-  const user=await dbGet('users',id);
-  currentUser=user;
-  localStorage.setItem('tc_session',JSON.stringify({userId:id,remember:true,ts:Date.now()}));
-  toast(`欢迎，${name}！`,'success');
-  await loadApp();
-  showPage('calendar');
+async function doSetup() {
+  const name = document.getElementById('setup-name').value.trim();
+  const pwd = document.getElementById('setup-pwd').value;
+  const pwd2 = document.getElementById('setup-pwd2').value;
+  if (!name) return toast('请输入姓名', 'error');
+  if (name.length > 20) return toast('姓名不能超过20个字符', 'error');
+  if (pwd.length < 6) return toast('密码至少6位', 'error');
+  if (pwd !== pwd2) return toast('两次密码不一致', 'error');
+  try {
+    const users = await fetchUsers();
+    if (users.find(u => u.name === name)) return toast('该姓名已被使用', 'error');
+    const user = await insertUser({ name, password: pwd, role: 'super', visible: true });
+    currentUser = user;
+    localStorage.setItem('tc_session', JSON.stringify({ userId: user.id, remember: true, ts: Date.now() }));
+    toast(`欢迎，${name}！`, 'success');
+    await loadApp();
+    showPage('calendar');
+  } catch (e) { toast('创建失败: ' + e.message, 'error'); }
 }
 
-async function doLogin(){
-  const name=document.getElementById('login-name').value.trim();
-  const pwd=document.getElementById('login-pwd').value;
-  const remember=document.getElementById('login-remember').checked;
-  if(!name||!pwd)return toast('请输入姓名和密码','error');
-  const users=await dbGetAll('users');
-  const user=users.find(u=>u.name===name&&u.password===pwd);
-  if(!user)return toast('姓名或密码错误','error');
-  currentUser=user;
-  const expiry=remember?7*24*60*60*1000:0;
-  localStorage.setItem('tc_session',JSON.stringify({userId:user.id,remember,ts:Date.now(),expiry}));
-  toast(`欢迎回来，${user.name}！`,'success');
-  await loadApp();
-  showPage('calendar');
+async function doLogin() {
+  const name = document.getElementById('login-name').value.trim();
+  const pwd = document.getElementById('login-pwd').value;
+  const remember = document.getElementById('login-remember').checked;
+  if (!name || !pwd) return toast('请输入姓名和密码', 'error');
+  try {
+    const users = await fetchUsers();
+    const user = users.find(u => u.name === name && u.password === pwd);
+    if (!user) return toast('姓名或密码错误', 'error');
+    currentUser = user;
+    localStorage.setItem('tc_session', JSON.stringify({ userId: user.id, remember, ts: Date.now() }));
+    toast(`欢迎回来，${user.name}！`, 'success');
+    await loadApp();
+    showPage('calendar');
+  } catch (e) { toast('登录失败: ' + e.message, 'error'); }
 }
 
-async function doLogout(){
+async function doLogout() {
   localStorage.removeItem('tc_session');
-  currentUser=null;
+  currentUser = null;
   closeAllDropdowns();
   showPage('login');
 }
 
-async function doChangePassword(){
-  const oldPwd=document.getElementById('pwd-old').value;
-  const newPwd=document.getElementById('pwd-new').value;
-  const newPwd2=document.getElementById('pwd-new2').value;
-  if(oldPwd!==currentUser.password)return toast('当前密码错误','error');
-  if(newPwd.length<6)return toast('新密码至少6位','error');
-  if(newPwd!==newPwd2)return toast('两次密码不一致','error');
-  currentUser.password=newPwd;
-  await dbPut('users',currentUser);
-  document.getElementById('pwd-old').value='';
-  document.getElementById('pwd-new').value='';
-  document.getElementById('pwd-new2').value='';
-  toast('密码已修改','success');
+async function doChangePassword() {
+  const oldPwd = document.getElementById('pwd-old').value;
+  const newPwd = document.getElementById('pwd-new').value;
+  const newPwd2 = document.getElementById('pwd-new2').value;
+  if (oldPwd !== currentUser.password) return toast('当前密码错误', 'error');
+  if (newPwd.length < 6) return toast('新密码至少6位', 'error');
+  if (newPwd !== newPwd2) return toast('两次密码不一致', 'error');
+  try {
+    currentUser = await updateUser(currentUser.id, { password: newPwd });
+    document.getElementById('pwd-old').value = '';
+    document.getElementById('pwd-new').value = '';
+    document.getElementById('pwd-new2').value = '';
+    toast('密码已修改', 'success');
+  } catch (e) { toast('修改失败: ' + e.message, 'error'); }
 }
 
-async function checkSession(){
-  const s=localStorage.getItem('tc_session');
-  if(!s)return false;
-  try{
-    const{userId,remember,ts,expiry}=JSON.parse(s);
-    if(!remember&&expiry===0){/* session only - check if same browser session - we'll allow it */}
-    if(remember&&expiry&&(Date.now()-ts>expiry)){localStorage.removeItem('tc_session');return false}
-    const user=await dbGet('users',userId);
-    if(!user){localStorage.removeItem('tc_session');return false}
-    currentUser=user;
+async function checkSession() {
+  const s = localStorage.getItem('tc_session');
+  if (!s) return false;
+  try {
+    const { userId } = JSON.parse(s);
+    const users = await fetchUsers();
+    const user = users.find(u => u.id === userId);
+    if (!user) { localStorage.removeItem('tc_session'); return false; }
+    currentUser = user;
     return true;
-  }catch(e){localStorage.removeItem('tc_session');return false}
+  } catch (e) { return false; }
 }
 
 // ===== APP LOAD =====
-async function loadApp(){
-  allUsers=await dbGetAll('users');
-  allEvents=await dbGetAll('events');
+async function loadApp() {
+  allUsers = await fetchUsers();
+  allEvents = await fetchEvents();
   updateNavUser();
   updateTeamVisibility();
 }
 
-function updateNavUser(){
-  if(!currentUser)return;
-  const c=getUserColor(currentUser);
-  const ini=getInitial(currentUser.name);
-  ['nav-avatar','nav-avatar2','nav-avatar3'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent=ini;el.style.background=c}});
-  ['nav-username','nav-username2','nav-username3'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=currentUser.name});
+function updateNavUser() {
+  if (!currentUser) return;
+  const c = getUserColor(currentUser);
+  const ini = getInitial(currentUser.name);
+  ['nav-avatar','nav-avatar2','nav-avatar3'].forEach(id => { const el = document.getElementById(id); if (el) { el.textContent = ini; el.style.background = c; } });
+  ['nav-username','nav-username2','nav-username3'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = currentUser.name; });
 }
 
-function updateTeamVisibility(){
-  const show=isAdmin();
-  ['nav-team','nav-team2','tab-team','tab-team2'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=show?'':'none'});
+function updateTeamVisibility() {
+  const show = isAdmin();
+  ['nav-team','nav-team2','tab-team','tab-team2'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = show ? '' : 'none'; });
 }
 
 // ===== PAGE ROUTING =====
-function showPage(name){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const pg=document.getElementById('page-'+name);
-  if(pg)pg.classList.add('active');
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-' + name);
+  if (pg) pg.classList.add('active');
   closeAllDropdowns();
-  if(name==='calendar')renderCalendar();
-  if(name==='team')renderMembers();
+  if (name === 'calendar') renderCalendar();
+  if (name === 'team') renderMembers();
 }
 
-function closeAllDropdowns(){
-  document.querySelectorAll('.user-dropdown,.filter-dropdown,.member-menu').forEach(d=>d.classList.remove('show'));
+function closeAllDropdowns() {
+  document.querySelectorAll('.user-dropdown,.filter-dropdown,.member-menu').forEach(d => d.classList.remove('show'));
 }
-document.addEventListener('click',e=>{if(!e.target.closest('.user-menu')&&!e.target.closest('.member-filter')&&!e.target.closest('.actions'))closeAllDropdowns()});
+document.addEventListener('click', e => { if (!e.target.closest('.user-menu') && !e.target.closest('.member-filter') && !e.target.closest('.actions')) closeAllDropdowns(); });
 
-// ===== USER MENU =====
-function toggleUserMenu(){
+function toggleUserMenu() {
   closeAllDropdowns();
-  const active=document.querySelector('.page.active');
-  if(!active)return;
-  const dd=active.querySelector('.user-dropdown');
-  if(dd)dd.classList.toggle('show');
+  const active = document.querySelector('.page.active');
+  if (!active) return;
+  const dd = active.querySelector('.user-dropdown');
+  if (dd) dd.classList.toggle('show');
 }
 
 // ===== CALENDAR =====
-function changeWeek(delta){currentWeekStart.setDate(currentWeekStart.getDate()+delta*7);renderCalendar()}
-function goToday(){currentWeekStart=getMonday(new Date());renderCalendar()}
+function changeWeek(delta) { currentWeekStart.setDate(currentWeekStart.getDate() + delta * 7); renderCalendar(); }
+function goToday() { currentWeekStart = getMonday(new Date()); renderCalendar(); }
+function getWeekNumber(d) { const oneJan = new Date(d.getFullYear(), 0, 1); return Math.ceil(((d - oneJan) / 86400000 + oneJan.getDay() + 1) / 7); }
 
-function renderCalendar(){
-  const body=document.getElementById('cal-body');
-  const days=[];
-  for(let i=0;i<7;i++){const d=new Date(currentWeekStart);d.setDate(d.getDate()+i);days.push(d)}
-  // Week title
-  const wn=getWeekNumber(currentWeekStart);
-  document.getElementById('week-title').textContent=`${currentWeekStart.getFullYear()}年${currentWeekStart.getMonth()+1}月 第${wn}周（${fmtDateCN(days[0])} - ${fmtDateCN(days[6])}）`;
-  // Today button state
-  const todayBtn=document.getElementById('btn-today');
-  const thisMonday=getMonday(new Date());
-  todayBtn.disabled=(currentWeekStart.getTime()===thisMonday.getTime());
+function renderCalendar() {
+  const body = document.getElementById('cal-body');
+  const days = [];
+  for (let i = 0; i < 7; i++) { const d = new Date(currentWeekStart); d.setDate(d.getDate() + i); days.push(d); }
+  const wn = getWeekNumber(currentWeekStart);
+  document.getElementById('week-title').textContent = `${currentWeekStart.getFullYear()}年${currentWeekStart.getMonth()+1}月 第${wn}周（${fmtDateCN(days[0])} - ${fmtDateCN(days[6])}）`;
+  const todayBtn = document.getElementById('btn-today');
+  const thisMonday = getMonday(new Date());
+  todayBtn.disabled = (currentWeekStart.getTime() === thisMonday.getTime());
 
-  // Build grid
-  const isMobile=window.innerWidth<=768;
-  const colCount=isMobile?1:7;
-  const mobileDay=isMobile?getMobileCurrentDay(days):0;
+  const isMobile = window.innerWidth <= 768;
+  const colCount = isMobile ? 1 : 7;
+  const mobileDay = isMobile ? getMobileCurrentDay(days) : 0;
+  const dayNames = ['一','二','三','四','五','六','日'];
 
-  // Build with flex layout for proper alignment
-  const dayNames=['一','二','三','四','五','六','日'];
-  body.innerHTML='';
-  const wrapper=document.createElement('div');
-  wrapper.style.cssText='display:flex;min-height:100%;position:relative';
-  // Time column
-  const timeCol=document.createElement('div');
-  timeCol.style.cssText='width:56px;flex-shrink:0;padding-top:52px';
-  for(let h=0;h<24;h++){
-    const lbl=document.createElement('div');
-    lbl.className='time-label';
-    lbl.textContent=`${String(h).padStart(2,'0')}:00`;
+  body.innerHTML = '';
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'display:flex;min-height:100%;position:relative';
+  const timeCol = document.createElement('div');
+  timeCol.style.cssText = 'width:56px;flex-shrink:0;padding-top:52px';
+  for (let h = 0; h < 24; h++) {
+    const lbl = document.createElement('div');
+    lbl.className = 'time-label';
+    lbl.textContent = `${String(h).padStart(2,'0')}:00`;
     timeCol.appendChild(lbl);
   }
   wrapper.appendChild(timeCol);
-  // Day columns
-  const daysContainer=document.createElement('div');
-  daysContainer.style.cssText='flex:1;display:flex;position:relative';
-  for(let i=0;i<colCount;i++){
-    const di=isMobile?mobileDay:i;
-    const d=days[di];
-    const dateStr=fmtDate(d);
-    const col=document.createElement('div');
-    col.className='day-col'+(isToday(d)?' today-col':'');
-    col.style.cssText='flex:1;min-width:0;position:relative;border-left:1px solid var(--border-light)';
-    // Header
-    const header=document.createElement('div');
-    header.className='day-header';
-    header.innerHTML=`<span>周${dayNames[di]}</span><span class="day-num${isToday(d)?' today':''}">${d.getDate()}</span>`;
+
+  const daysContainer = document.createElement('div');
+  daysContainer.style.cssText = 'flex:1;display:flex;position:relative';
+  for (let i = 0; i < colCount; i++) {
+    const di = isMobile ? mobileDay : i;
+    const d = days[di];
+    const dateStr = fmtDate(d);
+    const col = document.createElement('div');
+    col.className = 'day-col' + (isToday(d) ? ' today-col' : '');
+    col.style.cssText = 'flex:1;min-width:0;position:relative;border-left:1px solid var(--border-light)';
+    const header = document.createElement('div');
+    header.className = 'day-header';
+    header.innerHTML = `<span>周${dayNames[di]}</span><span class="day-num${isToday(d)?' today':''}">${d.getDate()}</span>`;
     col.appendChild(header);
-    // Hour slots
-    const slotsWrap=document.createElement('div');
-    slotsWrap.style.cssText='position:relative';
-    for(let h=0;h<24;h++){
-      const slot=document.createElement('div');
-      slot.className='hour-slot';
-      slot.onclick=(()=>{const hh=h,ds=dateStr;return()=>openCreateAt(ds,hh)})();
+    const slotsWrap = document.createElement('div');
+    slotsWrap.style.cssText = 'position:relative';
+    for (let h = 0; h < 24; h++) {
+      const slot = document.createElement('div');
+      slot.className = 'hour-slot';
+      slot.onclick = ((hh, ds) => () => openCreateAt(ds, hh))(h, dateStr);
       slotsWrap.appendChild(slot);
     }
-    // Render events for this day
-    const dayEvents=getFilteredEvents(dateStr);
-    dayEvents.forEach(ev=>{
-      const block=createEventBlock(ev);
-      slotsWrap.appendChild(block);
-    });
-    // Time indicator
-    if(isToday(d)){
-      const now=new Date();
-      const mins=now.getHours()*60+now.getMinutes();
-      const top=(mins/60)*56;
-      const indicator=document.createElement('div');
-      indicator.className='time-indicator';
-      indicator.style.top=top+'px';
-      indicator.innerHTML='<div class="dot"></div><div class="line"></div>';
+    const dayEvents = getFilteredEvents(dateStr);
+    dayEvents.forEach(ev => { slotsWrap.appendChild(createEventBlock(ev)); });
+    if (isToday(d)) {
+      const now = new Date();
+      const mins = now.getHours() * 60 + now.getMinutes();
+      const indicator = document.createElement('div');
+      indicator.className = 'time-indicator';
+      indicator.style.top = (mins / 60) * 56 + 'px';
+      indicator.innerHTML = '<div class="dot"></div><div class="line"></div>';
       slotsWrap.appendChild(indicator);
     }
     col.appendChild(slotsWrap);
@@ -736,333 +632,258 @@ function renderCalendar(){
   }
   wrapper.appendChild(daysContainer);
   body.appendChild(wrapper);
-
-  // Scroll to current time or 8am
-  requestAnimationFrame(()=>{
-    const now=new Date();
-    const scrollTo=(isToday(currentWeekStart)||days.some(d=>isToday(d)))?Math.max(0,(now.getHours()-1)*56):8*56;
-    body.scrollTop=scrollTo;
+  requestAnimationFrame(() => {
+    const now = new Date();
+    const scrollTo = days.some(d => isToday(d)) ? Math.max(0, (now.getHours() - 1) * 56) : 8 * 56;
+    body.scrollTop = scrollTo;
   });
-
-  // Mobile swipe
-  if(isMobile)setupMobileSwipe(body,days,mobileDay);
-
-  // Update filter dropdown
+  if (isMobile) setupMobileSwipe(body, days, mobileDay);
   renderFilterDropdown();
 }
 
-let mobileDayIndex=0;
-function getMobileCurrentDay(days){
-  const today=new Date();
-  for(let i=0;i<7;i++){if(isToday(days[i]))return i}
-  return Math.min(Math.max(mobileDayIndex,0),6);
+let mobileDayIndex = 0;
+function getMobileCurrentDay(days) { for (let i = 0; i < 7; i++) { if (isToday(days[i])) return i; } return Math.min(Math.max(mobileDayIndex, 0), 6); }
+function setupMobileSwipe(el, days, currentIdx) {
+  let startX = 0, startY = 0;
+  el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; }, { passive: true });
+  el.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0 && currentIdx < 6) { mobileDayIndex = currentIdx + 1; renderCalendar(); }
+      else if (dx > 0 && currentIdx > 0) { mobileDayIndex = currentIdx - 1; renderCalendar(); }
+    }
+  }, { passive: true });
 }
 
-function setupMobileSwipe(el,days,currentIdx){
-  let startX=0,startY=0;
-  el.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY},{passive:true});
-  el.addEventListener('touchend',e=>{
-    const dx=e.changedTouches[0].clientX-startX;
-    const dy=e.changedTouches[0].clientY-startY;
-    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)){
-      if(dx<0&&currentIdx<6){mobileDayIndex=currentIdx+1;renderCalendar()}
-      else if(dx>0&&currentIdx>0){mobileDayIndex=currentIdx-1;renderCalendar()}
-    }
-  },{passive:true});
-}
-
-function getWeekNumber(d){const oneJan=new Date(d.getFullYear(),0,1);return Math.ceil(((d-oneJan)/86400000+oneJan.getDay()+1)/7)}
-
-function getFilteredEvents(dateStr){
-  let events=allEvents.filter(ev=>ev.date===dateStr);
-  if(filterUserId==='mine'){
-    events=events.filter(ev=>ev.userId===currentUser.id);
-  }else if(filterUserId==='all'){
-    if(!isAdmin()){
-      events=events.filter(ev=>ev.userId===currentUser.id);
-    }else if(isSuperAdmin()){
-      // super admin sees all
-    }else{
-      // admin sees own + visible members
-      const visibleIds=allUsers.filter(u=>u.visible||u.id===currentUser.id).map(u=>u.id);
-      events=events.filter(ev=>visibleIds.includes(ev.userId));
-    }
-  }else{
-    events=events.filter(ev=>ev.userId==filterUserId);
-  }
+function getFilteredEvents(dateStr) {
+  let events = allEvents.filter(ev => ev.date === dateStr);
+  if (filterUserId === 'mine') {
+    events = events.filter(ev => ev.user_id === currentUser.id);
+  } else if (filterUserId === 'all') {
+    if (!isAdmin()) { events = events.filter(ev => ev.user_id === currentUser.id); }
+    else if (isSuperAdmin()) { /* sees all */ }
+    else { const visibleIds = allUsers.filter(u => u.visible || u.id === currentUser.id).map(u => u.id); events = events.filter(ev => visibleIds.includes(ev.user_id)); }
+  } else { events = events.filter(ev => ev.user_id == filterUserId); }
   return events;
 }
 
-function createEventBlock(ev){
-  const user=allUsers.find(u=>u.id===ev.userId);
-  const color=user?getUserColor(user):'#999';
-  const bgColor=color+'33';
-  const startParts=(ev.startTime||'00:00').split(':');
-  const endParts=(ev.endTime||'01:00').split(':');
-  const startMin=parseInt(startParts[0])*60+parseInt(startParts[1]);
-  const endMin=parseInt(endParts[0])*60+parseInt(endParts[1]);
-  const durationMin=Math.max(endMin-startMin,15);
-  const top=(startMin/60)*56;
-  const height=Math.max((durationMin/60)*56,24);
-  const block=document.createElement('div');
-  block.className='event-block';
-  block.style.cssText=`top:${top}px;height:${height}px;border-left-color:${color};background:${bgColor};color:${color}`;
-  block.innerHTML=`<div class="ev-title">${esc(ev.title)}</div>${height>30?`<div class="ev-time">${ev.startTime} - ${ev.endTime}</div>`:''}`;
-  block.onclick=(e)=>{e.stopPropagation();showEventDetail(ev.id)};
+function createEventBlock(ev) {
+  const user = allUsers.find(u => u.id === ev.user_id);
+  const color = user ? getUserColor(user) : '#999';
+  const startParts = (ev.start_time || '00:00').split(':');
+  const endParts = (ev.end_time || '01:00').split(':');
+  const startMin = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+  const endMin = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+  const durationMin = Math.max(endMin - startMin, 15);
+  const top = (startMin / 60) * 56;
+  const height = Math.max((durationMin / 60) * 56, 24);
+  const block = document.createElement('div');
+  block.className = 'event-block';
+  block.style.cssText = `top:${top}px;height:${height}px;border-left-color:${color};background:${color}33;color:${color}`;
+  block.innerHTML = `<div class="ev-title">${esc(ev.title)}</div>${height > 30 ? `<div class="ev-time">${ev.start_time.slice(0,5)} - ${ev.end_time.slice(0,5)}</div>` : ''}`;
+  block.onclick = e => { e.stopPropagation(); showEventDetail(ev.id); };
   return block;
 }
 
-function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
-
 // ===== FILTER =====
-function toggleFilterDropdown(){
-  const dd=document.getElementById('filter-dropdown');
-  dd.classList.toggle('show');
-}
-
-function renderFilterDropdown(){
-  const dd=document.getElementById('filter-dropdown');
-  let html='';
-  html+=`<button class="${filterUserId==='all'?'selected':''}" onclick="setFilter('all')"><span class="dot" style="background:var(--primary)"></span>全部成员</button>`;
-  html+=`<button class="${filterUserId==='mine'?'selected':''}" onclick="setFilter('mine')"><span class="dot" style="background:${getUserColor(currentUser)}"></span>只看我的</button>`;
-  html+='<div class="divider" style="height:1px;background:var(--border-light);margin:4px 8px"></div>';
-  allUsers.forEach(u=>{
-    const isHidden=!u.visible&&!isSuperAdmin();
-    if(isHidden&&u.id!==currentUser.id)return;
-    const canSee=isSuperAdmin()||u.visible||u.id===currentUser.id;
-    html+=`<button class="${filterUserId==u.id?'selected':''}" onclick="setFilter(${u.id})">
-      <span class="dot" style="background:${getUserColor(u)}"></span>
-      ${esc(u.name)}${u.role==='super'?' 👑':u.role==='admin'?' ⭐':''}
-      ${!u.visible&&isAdmin()?'<span class="hidden-tag">已隐藏</span>':''}
-    </button>`;
+function toggleFilterDropdown() { document.getElementById('filter-dropdown').classList.toggle('show'); }
+function renderFilterDropdown() {
+  const dd = document.getElementById('filter-dropdown');
+  let html = '';
+  html += `<button class="${filterUserId==='all'?'selected':''}" onclick="setFilter('all')"><span class="dot" style="background:var(--primary)"></span>全部成员</button>`;
+  html += `<button class="${filterUserId==='mine'?'selected':''}" onclick="setFilter('mine')"><span class="dot" style="background:${getUserColor(currentUser)}"></span>只看我的</button>`;
+  html += '<div class="divider" style="height:1px;background:var(--border-light);margin:4px 8px"></div>';
+  allUsers.forEach(u => {
+    if (!u.visible && !isSuperAdmin() && u.id !== currentUser.id) return;
+    html += `<button class="${filterUserId==u.id?'selected':''}" onclick="setFilter(${u.id})"><span class="dot" style="background:${getUserColor(u)}"></span>${esc(u.name)}${u.role==='super'?' 👑':u.role==='admin'?' ⭐':''}${!u.visible&&isAdmin()?'<span class="hidden-tag">已隐藏</span>':''}</button>`;
   });
-  dd.innerHTML=html;
-  // Update label
-  const label=document.getElementById('filter-label');
-  if(filterUserId==='all')label.textContent='👥 全部成员';
-  else if(filterUserId==='mine')label.textContent='👤 只看我的';
-  else{const u=allUsers.find(u=>u.id==filterUserId);label.textContent=u?`👤 ${u.name}`:'👥 全部成员'}
+  dd.innerHTML = html;
+  const label = document.getElementById('filter-label');
+  if (filterUserId === 'all') label.textContent = '👥 全部成员';
+  else if (filterUserId === 'mine') label.textContent = '👤 只看我的';
+  else { const u = allUsers.find(u => u.id == filterUserId); label.textContent = u ? `👤 ${u.name}` : '👥 全部成员'; }
 }
-
-function setFilter(val){
-  filterUserId=val;
-  document.getElementById('filter-dropdown').classList.remove('show');
-  renderCalendar();
-}
+function setFilter(val) { filterUserId = val; document.getElementById('filter-dropdown').classList.remove('show'); renderCalendar(); }
 
 // ===== EVENT CRUD =====
-function openCreateAt(date,hour){
-  editingEventId=null;
-  document.getElementById('form-title').textContent='新建日程';
-  document.getElementById('btn-save-event').textContent='创建';
-  document.getElementById('ev-title').value='';
-  document.getElementById('ev-date').value=date;
-  document.getElementById('ev-start').value=`${String(hour).padStart(2,'0')}:00`;
-  document.getElementById('ev-end').value=`${String(Math.min(hour+1,23)).padStart(2,'0')}:00`;
-  document.getElementById('ev-desc').value='';
-  uploadImages=[];
+function openCreateAt(date, hour) {
+  editingEventId = null;
+  document.getElementById('form-title').textContent = '新建日程';
+  document.getElementById('btn-save-event').textContent = '创建';
+  document.getElementById('ev-title').value = '';
+  document.getElementById('ev-date').value = date;
+  document.getElementById('ev-start').value = `${String(hour).padStart(2,'0')}:00`;
+  document.getElementById('ev-end').value = `${String(Math.min(hour + 1, 23)).padStart(2,'0')}:00`;
+  document.getElementById('ev-desc').value = '';
+  uploadImages = [];
   renderImagePreview();
   openModal('modal-event-form');
-  setTimeout(()=>document.getElementById('ev-title').focus(),100);
+  setTimeout(() => document.getElementById('ev-title').focus(), 100);
 }
 
-function openCreateEvent(){
-  const today=fmtDate(new Date());
-  const now=new Date();
-  const h=now.getHours();
-  openCreateAt(today,h);
+function openCreateEvent() { openCreateAt(fmtDate(new Date()), new Date().getHours()); }
+
+async function saveEvent() {
+  const title = document.getElementById('ev-title').value.trim();
+  const date = document.getElementById('ev-date').value;
+  const startTime = document.getElementById('ev-start').value;
+  const endTime = document.getElementById('ev-end').value;
+  const desc = document.getElementById('ev-desc').value.trim();
+  if (!title) return toast('请输入标题', 'error');
+  if (title.length > 50) return toast('标题不能超过50个字符', 'error');
+  if (!date) return toast('请选择日期', 'error');
+  if (!startTime) return toast('请选择开始时间', 'error');
+  if (!endTime) return toast('请选择结束时间', 'error');
+  if (endTime <= startTime) return toast('结束时间须晚于开始时间', 'error');
+  try {
+    const evData = { title, date, start_time: startTime, end_time: endTime, description: desc, images: [...uploadImages], user_id: currentUser.id, updated_at: new Date().toISOString() };
+    if (editingEventId) {
+      await updateEvent(editingEventId, evData);
+      toast('日程已更新', 'success');
+    } else {
+      evData.created_at = new Date().toISOString();
+      await insertEvent(evData);
+      toast('日程已创建', 'success');
+    }
+    closeModal('modal-event-form');
+    allEvents = await fetchEvents();
+    renderCalendar();
+  } catch (e) { toast('保存失败: ' + e.message, 'error'); }
 }
 
-async function saveEvent(){
-  const title=document.getElementById('ev-title').value.trim();
-  const date=document.getElementById('ev-date').value;
-  const startTime=document.getElementById('ev-start').value;
-  const endTime=document.getElementById('ev-end').value;
-  const desc=document.getElementById('ev-desc').value.trim();
-  if(!title)return toast('请输入标题','error');
-  if(title.length>50)return toast('标题不能超过50个字符','error');
-  if(!date)return toast('请选择日期','error');
-  if(!startTime)return toast('请选择开始时间','error');
-  if(!endTime)return toast('请选择结束时间','error');
-  if(endTime<=startTime)return toast('结束时间须晚于开始时间','error');
-
-  const evData={title,date,startTime,endTime,desc,images:[...uploadImages],userId:currentUser.id,updatedAt:Date.now()};
-
-  if(editingEventId){
-    evData.id=editingEventId;
-    const existing=await dbGet('events',editingEventId);
-    evData.createdAt=existing.createdAt;
-    await dbPut('events',evData);
-    toast('日程已更新','success');
-  }else{
-    evData.createdAt=Date.now();
-    await dbAdd('events',evData);
-    toast('日程已创建','success');
+function showEventDetail(id) {
+  currentDetailEventId = id;
+  const ev = allEvents.find(e => e.id === id);
+  if (!ev) return;
+  const user = allUsers.find(u => u.id === ev.user_id);
+  const dateObj = new Date(ev.date + 'T00:00:00');
+  document.getElementById('detail-title').textContent = ev.title;
+  let html = `<div style="margin-bottom:12px">
+    <div style="font-size:14px;color:var(--text2);margin-bottom:4px">📅 ${fmtDateFull(dateObj)}</div>
+    <div style="font-size:14px;color:var(--text2);margin-bottom:4px">🕐 ${ev.start_time.slice(0,5)} — ${ev.end_time.slice(0,5)}</div>
+    <div style="font-size:14px;color:var(--text2)">👤 创建人：${esc(user ? user.name : '未知')}</div>
+  </div>`;
+  if (ev.description) html += `<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:4px">描述</div><div style="font-size:14px;line-height:1.6;white-space:pre-wrap">${esc(ev.description)}</div></div>`;
+  if (ev.images && ev.images.length) {
+    html += `<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:8px">📎 图片（${ev.images.length}张）</div><div style="display:flex;flex-wrap:wrap;gap:8px">`;
+    ev.images.forEach((img, i) => { html += `<div style="width:80px;height:80px;border-radius:6px;overflow:hidden;cursor:pointer" onclick='openLightbox(${JSON.stringify(JSON.stringify(ev.images))},${i})'><img src="${img}" style="width:100%;height:100%;object-fit:cover"></div>`; });
+    html += `</div></div>`;
   }
-  closeModal('modal-event-form');
-  allEvents=await dbGetAll('events');
-  renderCalendar();
-}
-
-function showEventDetail(id){
-  currentDetailEventId=id;
-  const ev=allEvents.find(e=>e.id===id);
-  if(!ev)return;
-  const user=allUsers.find(u=>u.id===ev.userId);
-  const dateObj=new Date(ev.date+'T00:00:00');
-  document.getElementById('detail-title').textContent=ev.title;
-  let html=`
-    <div style="margin-bottom:12px">
-      <div style="font-size:14px;color:var(--text2);margin-bottom:4px">📅 ${fmtDateFull(dateObj)}</div>
-      <div style="font-size:14px;color:var(--text2);margin-bottom:4px">🕐 ${ev.startTime} — ${ev.endTime}</div>
-      <div style="font-size:14px;color:var(--text2)">👤 创建人：${esc(user?user.name:'未知')}</div>
-    </div>`;
-  if(ev.desc){html+=`<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:4px">描述</div><div style="font-size:14px;line-height:1.6;white-space:pre-wrap">${esc(ev.desc)}</div></div>`}
-  if(ev.images&&ev.images.length){
-    html+=`<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:8px">📎 图片（${ev.images.length}张）</div><div style="display:flex;flex-wrap:wrap;gap:8px">`;
-    ev.images.forEach((img,i)=>{
-      html+=`<div style="width:80px;height:80px;border-radius:6px;overflow:hidden;cursor:pointer" onclick="openLightbox(${JSON.stringify(ev.images).replace(/"/g,'&quot;')},${i})"><img src="${img}" style="width:100%;height:100%;object-fit:cover"></div>`;
-    });
-    html+=`</div></div>`;
-  }
-  if(ev.createdAt){html+=`<div style="font-size:12px;color:var(--text3);margin-top:8px">创建于 ${new Date(ev.createdAt).toLocaleString('zh-CN')}</div>`}
-  document.getElementById('detail-content').innerHTML=html;
-  // Show/hide edit/delete based on permissions
-  const actions=document.querySelector('#modal-detail .modal-actions');
-  const canEdit=(ev.userId===currentUser.id)||isAdmin();
-  actions.style.display=canEdit?'flex':'none';
+  if (ev.created_at) html += `<div style="font-size:12px;color:var(--text3);margin-top:8px">创建于 ${new Date(ev.created_at).toLocaleString('zh-CN')}</div>`;
+  document.getElementById('detail-content').innerHTML = html;
+  const actions = document.querySelector('#modal-detail .modal-actions');
+  const canEdit = (ev.user_id === currentUser.id) || isAdmin();
+  actions.style.display = canEdit ? 'flex' : 'none';
   openModal('modal-detail');
 }
 
-function editCurrentEvent(){
-  const ev=allEvents.find(e=>e.id===currentDetailEventId);
-  if(!ev)return;
+function editCurrentEvent() {
+  const ev = allEvents.find(e => e.id === currentDetailEventId);
+  if (!ev) return;
   closeModal('modal-detail');
-  editingEventId=ev.id;
-  document.getElementById('form-title').textContent='编辑日程';
-  document.getElementById('btn-save-event').textContent='保存';
-  document.getElementById('ev-title').value=ev.title;
-  document.getElementById('ev-date').value=ev.date;
-  document.getElementById('ev-start').value=ev.startTime;
-  document.getElementById('ev-end').value=ev.endTime;
-  document.getElementById('ev-desc').value=ev.desc||'';
-  uploadImages=[...(ev.images||[])];
+  editingEventId = ev.id;
+  document.getElementById('form-title').textContent = '编辑日程';
+  document.getElementById('btn-save-event').textContent = '保存';
+  document.getElementById('ev-title').value = ev.title;
+  document.getElementById('ev-date').value = ev.date;
+  document.getElementById('ev-start').value = ev.start_time;
+  document.getElementById('ev-end').value = ev.end_time;
+  document.getElementById('ev-desc').value = ev.description || '';
+  uploadImages = [...(ev.images || [])];
   renderImagePreview();
   openModal('modal-event-form');
 }
 
-function deleteCurrentEvent(){
-  showConfirm('确认删除日程？','删除后无法恢复，日程中的图片也将一并删除。','删除','btn-danger',async()=>{
-    await dbDel('events',currentDetailEventId);
-    allEvents=await dbGetAll('events');
-    closeModal('modal-detail');
-    renderCalendar();
-    toast('日程已删除','success');
+function deleteCurrentEvent() {
+  showConfirm('确认删除日程？', '删除后无法恢复。', '删除', 'btn-danger', async () => {
+    try {
+      await deleteEvent(currentDetailEventId);
+      allEvents = await fetchEvents();
+      closeModal('modal-detail');
+      renderCalendar();
+      toast('日程已删除', 'success');
+    } catch (e) { toast('删除失败: ' + e.message, 'error'); }
   });
 }
 
 // ===== IMAGE UPLOAD =====
-function handleFiles(files){
-  Array.from(files).forEach(f=>{
-    if(!f.type.startsWith('image/'))return toast(`${f.name} 不是图片格式`,'error');
-    if(f.size>5*1024*1024)return toast(`${f.name} 超过5MB限制`,'error');
-    const reader=new FileReader();
-    reader.onload=e=>{uploadImages.push(e.target.result);renderImagePreview()};
+function handleFiles(files) {
+  Array.from(files).forEach(f => {
+    if (!f.type.startsWith('image/')) return toast(`${f.name} 不是图片格式`, 'error');
+    if (f.size > 5 * 1024 * 1024) return toast(`${f.name} 超过5MB限制`, 'error');
+    const reader = new FileReader();
+    reader.onload = e => { uploadImages.push(e.target.result); renderImagePreview(); };
     reader.readAsDataURL(f);
   });
-  document.getElementById('img-file-input').value='';
+  document.getElementById('img-file-input').value = '';
 }
-
-function handleDrop(e){
-  e.preventDefault();
-  e.currentTarget.classList.remove('dragover');
-  handleFiles(e.dataTransfer.files);
-}
-
-function removeImage(idx){
-  uploadImages.splice(idx,1);
-  renderImagePreview();
-}
-
-function renderImagePreview(){
-  const area=document.getElementById('img-upload-area');
-  let html='';
-  uploadImages.forEach((img,i)=>{
-    html+=`<div class="img-thumb"><img src="${img}"><div class="remove" onclick="event.stopPropagation();removeImage(${i})">✕</div></div>`;
-  });
-  html+=`<div class="img-add-btn"><span class="plus">＋</span><span>添加</span></div>`;
-  area.innerHTML=html;
+function handleDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('dragover'); handleFiles(e.dataTransfer.files); }
+function removeImage(idx) { uploadImages.splice(idx, 1); renderImagePreview(); }
+function renderImagePreview() {
+  const area = document.getElementById('img-upload-area');
+  let html = '';
+  uploadImages.forEach((img, i) => { html += `<div class="img-thumb"><img src="${img}"><div class="remove" onclick="event.stopPropagation();removeImage(${i})">✕</div></div>`; });
+  html += `<div class="img-add-btn"><span class="plus">＋</span><span>添加</span></div>`;
+  area.innerHTML = html;
 }
 
 // ===== LIGHTBOX =====
-function openLightbox(images,index){
-  lbImages=typeof images==='string'?JSON.parse(images):images;
-  lbIndex=index||0;
+function openLightbox(imagesJson, index) {
+  lbImages = JSON.parse(imagesJson);
+  lbIndex = index || 0;
   updateLightbox();
   document.getElementById('lightbox').classList.add('show');
 }
-function closeLightbox(){document.getElementById('lightbox').classList.remove('show')}
-function lbNav(dir){lbIndex=(lbIndex+dir+lbImages.length)%lbImages.length;updateLightbox()}
-function updateLightbox(){document.getElementById('lb-img').src=lbImages[lbIndex];document.getElementById('lb-counter').textContent=`${lbIndex+1} / ${lbImages.length}`}
-document.addEventListener('keydown',e=>{
-  if(!document.getElementById('lightbox').classList.contains('show'))return;
-  if(e.key==='Escape')closeLightbox();
-  if(e.key==='ArrowLeft')lbNav(-1);
-  if(e.key==='ArrowRight')lbNav(1);
+function closeLightbox() { document.getElementById('lightbox').classList.remove('show'); }
+function lbNav(dir) { lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length; updateLightbox(); }
+function updateLightbox() { document.getElementById('lb-img').src = lbImages[lbIndex]; document.getElementById('lb-counter').textContent = `${lbIndex + 1} / ${lbImages.length}`; }
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('show')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') lbNav(-1);
+  if (e.key === 'ArrowRight') lbNav(1);
 });
 
-// ===== TEAM MANAGEMENT =====
-function openAddMember(){
-  document.getElementById('member-modal-title').textContent='添加成员';
-  document.getElementById('m-name').value='';
-  document.getElementById('m-pwd').value='';
-  openModal('modal-add-member');
+// ===== TEAM =====
+function openAddMember() { document.getElementById('m-name').value = ''; document.getElementById('m-pwd').value = ''; openModal('modal-add-member'); }
+
+async function saveMember() {
+  const name = document.getElementById('m-name').value.trim();
+  const pwd = document.getElementById('m-pwd').value;
+  if (!name) return toast('请输入姓名', 'error');
+  if (name.length > 20) return toast('姓名不能超过20个字符', 'error');
+  if (pwd.length < 6) return toast('密码至少6位', 'error');
+  try {
+    const users = await fetchUsers();
+    if (users.find(u => u.name === name)) return toast('该姓名已被使用', 'error');
+    await insertUser({ name, password: pwd, role: 'member', visible: true });
+    allUsers = await fetchUsers();
+    closeModal('modal-add-member');
+    renderMembers();
+    renderCalendar();
+    toast(`已创建成员 ${name}`, 'success');
+  } catch (e) { toast('创建失败: ' + e.message, 'error'); }
 }
 
-async function saveMember(){
-  const name=document.getElementById('m-name').value.trim();
-  const pwd=document.getElementById('m-pwd').value;
-  if(!name)return toast('请输入姓名','error');
-  if(name.length>20)return toast('姓名不能超过20个字符','error');
-  if(pwd.length<6)return toast('密码至少6位','error');
-  const users=await dbGetAll('users');
-  if(users.find(u=>u.name===name))return toast('该姓名已被使用','error');
-  await dbAdd('users',{name,password:pwd,role:'member',visible:true,createdAt:Date.now()});
-  allUsers=await dbGetAll('users');
-  closeModal('modal-add-member');
-  renderMembers();
-  renderCalendar();
-  toast(`已创建成员 ${name}`,'success');
-}
-
-function renderMembers(search=''){
-  const list=document.getElementById('member-list');
-  let users=allUsers.slice().sort((a,b)=>{
-    const order={super:0,admin:1,member:2};
-    return(order[a.role]||2)-(order[b.role]||2)||a.createdAt-b.createdAt;
-  });
-  if(search){const s=search.toLowerCase();users=users.filter(u=>u.name.toLowerCase().includes(s))}
-  if(!users.length){list.innerHTML='<div class="empty-state"><div class="icon">👥</div><p>暂无成员</p></div>';return}
-  let html='';
-  users.forEach(u=>{
-    const c=getUserColor(u);
-    const ini=getInitial(u.name);
-    const roleLabel=u.role==='super'?'超级管理员':u.role==='admin'?'管理员':'普通成员';
-    const roleClass=u.role==='super'?'role-super':u.role==='admin'?'role-admin':'role-member';
-    const roleIcon=u.role==='super'?'👑':u.role==='admin'?'⭐':'';
-    html+=`<div class="member-card">
-      <div class="avatar" style="background:${c}">${ini}</div>
-      <div class="info">
-        <div class="name">${roleIcon} ${esc(u.name)}</div>
-        <span class="role-tag ${roleClass}">${roleLabel}</span>
-      </div>
-      <div class="vis-status vis-toggle">
-        <div class="vis-dot" style="background:${u.visible?'var(--success)':'var(--error)'}"></div>
-        <span>${u.visible?'可见':'不可见'}</span>
+function renderMembers(search = '') {
+  const list = document.getElementById('member-list');
+  let users = allUsers.slice().sort((a, b) => { const order = { super: 0, admin: 1, member: 2 }; return (order[a.role] || 2) - (order[b.role] || 2) || new Date(a.created_at) - new Date(b.created_at); });
+  if (search) { const s = search.toLowerCase(); users = users.filter(u => u.name.toLowerCase().includes(s)); }
+  if (!users.length) { list.innerHTML = '<div class="empty-state"><div class="icon">👥</div><p>暂无成员</p></div>'; return; }
+  let html = '';
+  users.forEach(u => {
+    const c = getUserColor(u);
+    const roleLabel = u.role === 'super' ? '超级管理员' : u.role === 'admin' ? '管理员' : '普通成员';
+    const roleClass = u.role === 'super' ? 'role-super' : u.role === 'admin' ? 'role-admin' : 'role-member';
+    const roleIcon = u.role === 'super' ? '👑' : u.role === 'admin' ? '⭐' : '';
+    html += `<div class="member-card">
+      <div class="avatar" style="background:${c}">${getInitial(u.name)}</div>
+      <div class="info"><div class="name">${roleIcon} ${esc(u.name)}</div><span class="role-tag ${roleClass}">${roleLabel}</span></div>
+      <div class="vis-status vis-toggle"><div class="vis-dot" style="background:${u.visible?'var(--success)':'var(--error)'}"></div><span>${u.visible?'可见':'不可见'}</span>
         ${isAdmin()&&u.id!==currentUser.id?`<div class="toggle${u.visible?' on':''}" onclick="toggleVisibility(${u.id},${u.visible})" style="margin-left:8px"></div>`:''}
       </div>
-      <div class="actions">
-        ${isAdmin()&&u.id!==currentUser.id?`<button class="more-btn" onclick="event.stopPropagation();toggleMemberMenu(${u.id})">···</button>
+      <div class="actions">${isAdmin()&&u.id!==currentUser.id?`<button class="more-btn" onclick="event.stopPropagation();toggleMemberMenu(${u.id})">···</button>
         <div class="member-menu" id="member-menu-${u.id}">
           <button onclick="openResetPwd(${u.id},'${esc(u.name)}')">🔄 重置密码</button>
           ${isSuperAdmin()?`<div class="divider"></div>`:''}
@@ -1072,132 +893,112 @@ function renderMembers(search=''){
           <div class="divider"></div>
           <button class="danger" onclick="deleteMember(${u.id},'${esc(u.name)}')">🗑 删除成员</button>
         </div>`:''}
-      </div>
-    </div>`;
+      </div></div>`;
   });
-  list.innerHTML=html;
+  list.innerHTML = html;
 }
 
-function toggleMemberMenu(uid){
-  closeAllDropdowns();
-  const menu=document.getElementById('member-menu-'+uid);
-  if(menu)menu.classList.toggle('show');
+function toggleMemberMenu(uid) { closeAllDropdowns(); const menu = document.getElementById('member-menu-' + uid); if (menu) menu.classList.toggle('show'); }
+
+async function toggleVisibility(uid, currentVal) {
+  try {
+    const user = allUsers.find(u => u.id === uid);
+    if (!user) return;
+    await updateUser(uid, { visible: !currentVal });
+    allUsers = await fetchUsers();
+    renderMembers(); renderCalendar();
+    toast(`${user.name} 的日程已${!currentVal?'显示':'隐藏'}`, 'success');
+  } catch (e) { toast('操作失败: ' + e.message, 'error'); }
 }
 
-async function toggleVisibility(uid,currentVal){
-  const user=await dbGet('users',uid);
-  if(!user)return;
-  user.visible=!currentVal;
-  await dbPut('users',user);
-  allUsers=await dbGetAll('users');
-  renderMembers();
-  renderCalendar();
-  toast(`${user.name} 的日程已${user.visible?'显示':'隐藏'}`,'success');
-}
-
-function changeRole(uid,newRole){
-  const user=allUsers.find(u=>u.id===uid);
-  if(!user)return;
-  const label=newRole==='admin'?'提升为管理员':'降级为普通成员';
-  showConfirm(`确认${label}？`,`确定将 ${user.name} ${label}？`,newRole==='admin'?'确认提升':'确认降级','btn-primary',async()=>{
-    user.role=newRole;
-    await dbPut('users',user);
-    allUsers=await dbGetAll('users');
-    renderMembers();
-    toast(`${user.name} 已${label==='提升为管理员'?'被提升为管理员':'被降级为成员'}`,'success');
+function changeRole(uid, newRole) {
+  const user = allUsers.find(u => u.id === uid);
+  if (!user) return;
+  const label = newRole === 'admin' ? '提升为管理员' : '降级为普通成员';
+  showConfirm(`确认${label}？`, `确定将 ${user.name} ${label}？`, '确认', 'btn-primary', async () => {
+    try { await updateUser(uid, { role: newRole }); allUsers = await fetchUsers(); renderMembers(); toast(`${user.name} 已${label}`, 'success'); } catch (e) { toast('操作失败: ' + e.message, 'error'); }
   });
 }
 
-function transferSuper(uid,name){
-  let pwdInput='';
-  showConfirm('⚠️ 确认转移超级管理员？',
-    `此操作将把超管身份转移给 <b>${name}</b>，您将变为管理员。`,
-    '确认转移','btn-danger',async()=>{
-      const pwdEl=document.getElementById('transfer-pwd-input');
-      const pwd=pwdEl?pwdEl.value:'';
-      if(pwd!==currentUser.password)return toast('密码错误，转移失败','error');
-      const target=await dbGet('users',uid);
-      if(!target)return;
-      currentUser.role='admin';
-      await dbPut('users',currentUser);
-      target.role='super';
-      await dbPut('users',target);
-      allUsers=await dbGetAll('users');
+function transferSuper(uid, name) {
+  showConfirm('⚠️ 确认转移超级管理员？', `此操作将把超管身份转移给 <b>${name}</b>，您将变为管理员。`, '确认转移', 'btn-danger', async () => {
+    const pwdEl = document.getElementById('transfer-pwd-input');
+    const pwd = pwdEl ? pwdEl.value : '';
+    if (pwd !== currentUser.password) return toast('密码错误，转移失败', 'error');
+    try {
+      await updateUser(currentUser.id, { role: 'admin' });
+      await updateUser(uid, { role: 'super' });
+      allUsers = await fetchUsers();
+      currentUser = allUsers.find(u => u.id === currentUser.id);
+      updateTeamVisibility();
       renderMembers();
-      toast(`超管身份已转移给 ${name}`,'success');
-    },
-    `<div style="text-align:left;margin-top:12px"><label style="font-size:13px;color:var(--text2);margin-bottom:6px;display:block">请输入您的密码确认</label><input id="transfer-pwd-input" type="password" style="width:100%;height:40px;padding:0 12px;border:1.5px solid var(--border);border-radius:8px" placeholder="输入密码"></div>`
-  );
+      toast(`超管身份已转移给 ${name}`, 'success');
+    } catch (e) { toast('转移失败: ' + e.message, 'error'); }
+  }, `<div style="text-align:left;margin-top:12px"><label style="font-size:13px;color:var(--text2);margin-bottom:6px;display:block">请输入您的密码确认</label><input id="transfer-pwd-input" type="password" style="width:100%;height:40px;padding:0 12px;border:1.5px solid var(--border);border-radius:8px" placeholder="输入密码"></div>`);
 }
 
-function deleteMember(uid,name){
-  showConfirm('确认删除成员？',`确定删除成员 <b>${name}</b>？该成员的所有日程数据将被一并删除，此操作不可恢复。`,'删除','btn-danger',async()=>{
-    // Delete user's events
-    const userEvents=allEvents.filter(e=>e.userId===uid);
-    for(const ev of userEvents)await dbDel('events',ev.id);
-    await dbDel('users',uid);
-    allUsers=await dbGetAll('users');
-    allEvents=await dbGetAll('events');
-    renderMembers();
-    renderCalendar();
-    toast(`已删除成员 ${name}`,'success');
+function deleteMember(uid, name) {
+  showConfirm('确认删除成员？', `确定删除成员 <b>${name}</b>？该成员的所有日程数据将被一并删除。`, '删除', 'btn-danger', async () => {
+    try {
+      await deleteUser(uid);
+      allUsers = await fetchUsers();
+      allEvents = await fetchEvents();
+      renderMembers(); renderCalendar();
+      toast(`已删除成员 ${name}`, 'success');
+    } catch (e) { toast('删除失败: ' + e.message, 'error'); }
   });
 }
 
-function openResetPwd(uid,name){
-  resetPwdTargetId=uid;
-  document.getElementById('reset-pwd-label').textContent=`为 ${name} 设置新密码`;
-  document.getElementById('reset-pwd').value='';
-  document.getElementById('reset-pwd2').value='';
+function openResetPwd(uid, name) {
+  resetPwdTargetId = uid;
+  document.getElementById('reset-pwd-label').textContent = `为 ${name} 设置新密码`;
+  document.getElementById('reset-pwd').value = '';
+  document.getElementById('reset-pwd2').value = '';
   openModal('modal-reset-pwd');
 }
 
-async function doResetPassword(){
-  const pwd=document.getElementById('reset-pwd').value;
-  const pwd2=document.getElementById('reset-pwd2').value;
-  if(pwd.length<6)return toast('密码至少6位','error');
-  if(pwd!==pwd2)return toast('两次密码不一致','error');
-  const user=await dbGet('users',resetPwdTargetId);
-  if(!user)return toast('用户不存在','error');
-  user.password=pwd;
-  await dbPut('users',user);
-  allUsers=await dbGetAll('users');
-  closeModal('modal-reset-pwd');
-  toast(`已重置 ${user.name} 的密码`,'success');
+async function doResetPassword() {
+  const pwd = document.getElementById('reset-pwd').value;
+  const pwd2 = document.getElementById('reset-pwd2').value;
+  if (pwd.length < 6) return toast('密码至少6位', 'error');
+  if (pwd !== pwd2) return toast('两次密码不一致', 'error');
+  try {
+    await updateUser(resetPwdTargetId, { password: pwd });
+    allUsers = await fetchUsers();
+    closeModal('modal-reset-pwd');
+    const user = allUsers.find(u => u.id === resetPwdTargetId);
+    toast(`已重置 ${user ? user.name : ''} 的密码`, 'success');
+  } catch (e) { toast('重置失败: ' + e.message, 'error'); }
 }
 
 // ===== KEYBOARD SHORTCUTS =====
-document.addEventListener('keydown',e=>{
-  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
-  if(document.querySelector('.modal-overlay.show,.confirm-overlay.show,.lightbox.show'))return;
-  if(!currentUser)return;
-  if(e.key==='n'||e.key==='N'){e.preventDefault();openCreateEvent()}
-  if(e.key==='t'||e.key==='T'){e.preventDefault();goToday()}
-  if(e.key==='ArrowLeft'){e.preventDefault();changeWeek(-1)}
-  if(e.key==='ArrowRight'){e.preventDefault();changeWeek(1)}
-  if(e.key==='Escape')closeLightbox();
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (document.querySelector('.modal-overlay.show,.confirm-overlay.show,.lightbox.show')) return;
+  if (!currentUser) return;
+  if (e.key === 'n' || e.key === 'N') { e.preventDefault(); openCreateEvent(); }
+  if (e.key === 't' || e.key === 'T') { e.preventDefault(); goToday(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); changeWeek(-1); }
+  if (e.key === 'ArrowRight') { e.preventDefault(); changeWeek(1); }
+  if (e.key === 'Escape') closeLightbox();
 });
 
-// ===== RESIZE =====
 let resizeTimer;
-window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(currentUser&&document.getElementById('page-calendar').classList.contains('active'))renderCalendar()},200)});
+window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if (currentUser && document.getElementById('page-calendar').classList.contains('active')) renderCalendar(); }, 200); });
 
 // ===== INIT =====
-(async()=>{
-  await openDB();
-  const users=await dbGetAll('users');
-  if(users.length===0){showPage('setup');return}
-  const hasSession=await checkSession();
-  if(hasSession){
-    await loadApp();
-    showPage('calendar');
-  }else{
-    showPage('login');
-  }
+(async () => {
+  try {
+    const users = await fetchUsers();
+    if (users.length === 0) { document.getElementById('loading-overlay').style.display = 'none'; showPage('setup'); return; }
+    const hasSession = await checkSession();
+    if (hasSession) { await loadApp(); showPage('calendar'); }
+    else { showPage('login'); }
+  } catch (e) { toast('连接失败: ' + e.message, 'error'); showPage('login'); }
+  document.getElementById('loading-overlay').style.display = 'none';
 })();
 
-// Time indicator update every minute
-setInterval(()=>{if(currentUser&&document.getElementById('page-calendar').classList.contains('active'))renderCalendar()},60000);
+setInterval(() => { if (currentUser && document.getElementById('page-calendar').classList.contains('active')) renderCalendar(); }, 60000);
 </script>
 </body>
 </html>
